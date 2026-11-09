@@ -4,190 +4,466 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Francesco Pivi</title>
-<meta name="description" content="Francesco Pivi — PhD student in Computer Science and Engineering (University of Bologna), visiting Cornell Tech. Generative AI, optimization, GPUs. Romagnolo.">
+<meta name="description" content="Francesco Pivi: PhD student at the University of Bologna, visiting researcher at Cornell Tech. Diffusion models, certified optimization on GPUs, generative AI with Ferrari. From Romagna.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
+  /* Palette from the subject: Bologna brick at night, rosso corsa, Dolomite stone */
   :root {
-    --bg: #f6efe2;          /* canvas, like Romagna's tele stampate */
-    --ink: #1f1a16;
-    --muted: #6b5f55;
-    --rust: #a8481f;        /* ruggine: the rust-print colour of Romagna */
-    --rosso: #d40000;       /* rosso corsa */
-    --line: #e2d6c2;
-    --card: #fbf7ef;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#16120f; --ink:#f1e8da; --muted:#b3a593; --rust:#d9733f; --rosso:#ff3b30; --line:#2e2620; --card:#1d1814; }
+    --bg: #15100d;
+    --surface: #221914;
+    --ink: #f1f0ee;
+    --muted: #bdb7b0;
+    --accent: #ff4136;
+    --rosso: #c8102e;
+    --rosso-ink: #ffffff;
+    --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+    --step-body: clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem);
+    --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+    --step-head: clamp(2rem, 1.3rem + 3.2vw, 4rem);
+    --step-name: clamp(64px, 9vw, 168px);
+    --m: clamp(16px, 2.2vw, 32px);
+    --ease: cubic-bezier(.2,.7,.2,1);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.6 Karla, system-ui, sans-serif; }
-  a { color:var(--rust); text-underline-offset:3px; }
-  a:hover { color:var(--rosso); }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-body)/1.5 "Zilla Slab", Georgia, serif; }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; transition: color .2s; }
+  a:hover { color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  h1, h2, h3 { font-weight: 600; letter-spacing: -0.025em; line-height: 1; margin: 0; }
+  h2 { font-size: var(--step-head); }
+  p { margin: 0; }
 
-  nav { display:flex; justify-content:space-between; align-items:center; padding:22px 0; font-size:15px; }
-  nav .me { font-family:"Young Serif", serif; font-weight:700; color:var(--ink); text-decoration:none; font-size:19px; }
-  nav ul { list-style:none; display:flex; gap:20px; margin:0; padding:0; }
-  nav ul a { color:var(--muted); text-decoration:none; }
-  nav ul a:hover { color:var(--rust); }
+  /* ---------- nav ---------- */
+  .nav { position: absolute; top: var(--m); right: var(--m); z-index: 5; display: flex; gap: 26px; font-size: inherit; }
+  .nav a { text-decoration: none; }
+  .nav a.act { color: var(--bg); background: var(--accent); padding: 4px 14px; }
+  .nav a.act:hover { color: var(--bg); background: var(--ink); }
 
-  header.hero { padding: 56px 0 0; }
-  h1 { font-family:"Young Serif", serif; font-weight:700; font-size:clamp(44px, 9vw, 88px); line-height:1; margin:14px 0 22px; letter-spacing:-.02em; }
-  h1 em { font-style:normal; color:var(--rust); }
-  .lede { font-size:20px; max-width:620px; color:var(--ink); }
-  .lede small { display:block; color:var(--muted); font-size:16px; margin-top:10px; }
-  .stripe { height:6px; width:120px; margin:28px 0 0; background:linear-gradient(90deg,var(--rosso) 0 60%, #ffd200 60% 80%, var(--rust) 80%); border-radius:3px; }
+  /* ---------- split stage ---------- */
+  .split { display: grid; grid-template-columns: 47% 1fr; position: relative; }
+  .stage { position: sticky; top: 0; height: 100svh; }
+  .stage figure { position: absolute; inset: 20px 0 20px 20px; margin: 0; overflow: hidden; opacity: 0; transition: opacity .8s var(--ease); }
+  .stage figure:not(.on) { visibility: hidden; transition: opacity .8s var(--ease), visibility 0s .8s; }
+  .stage figure.on { opacity: 1; }
+  .stage figure:not(.on) figcaption { display: none; }
+  .stage img { width: 100%; height: 100%; object-fit: cover; animation: drift 30s ease-in-out infinite alternate; }
+  .stage figcaption { position: absolute; left: 0; top: 0; padding: 10px 14px; font-size: var(--step-small); background: var(--bg); color: var(--ink); }
+  @keyframes drift { from { transform: scale(1.02); } to { transform: scale(1.12) translate(-1.5%, -1%); } }
 
-  .ridge { display:block; width:100%; height:auto; margin-top:40px; color:var(--rust); }
+  .col { padding: 0 var(--m) 0 clamp(32px, 5vw, 80px); min-width: 0; }
 
-  section { padding: 64px 0; border-top:1px solid var(--line); }
-  h2 { font-family:"Young Serif", serif; font-size:34px; margin:0 0 8px; font-weight:700; }
-  h2 + .sub { color:var(--muted); margin:0 0 32px; }
+  /* hero */
+  .hero { min-height: 100svh; position: relative; display: flex; flex-direction: column; justify-content: center; }
+  .hero .lede { max-width: 26ch; font-size: var(--step-lead); line-height: 1.35; }
+  .hero .go { display: inline-block; margin-top: 32px; font-weight: 500; background: var(--accent); color: var(--bg); text-decoration: none; padding: 12px 22px; transition: transform .15s var(--ease), background .2s; }
+  .hero .go:hover { background: var(--ink); color: var(--bg); }
+  .hero .go:active { transform: scale(.97); }
+  h1.name { position: absolute; bottom: 40px; right: 0; font-size: var(--step-name); font-weight: 600; letter-spacing: -0.04em; line-height: .9; white-space: nowrap; text-transform: lowercase; transform-origin: right bottom; z-index: 4; }
+  @supports (animation-timeline: scroll()) {
+    h1.name { animation: shrink linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
+    @keyframes shrink { to { transform: scale(.93); } }
+  }
 
-  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:18px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; }
-  .card h3 { margin:0 0 6px; font-size:18px; }
-  .card p { margin:0; color:var(--muted); font-size:15.5px; }
-  .card .tag { display:inline-block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--rust); margin-bottom:10px; }
+  /* about: letter */
+  .letter { max-width: 34em; padding: 160px 0; }
+  .letter h2 { font-size: var(--step-head); margin-bottom: 28px; }
+  .letter p + p { margin-top: 1em; }
+  .letter mark { background: var(--rosso); color: var(--rosso-ink); padding: 0 .2em; }
+  .letter .sign { margin-top: 36px; font-size: var(--step-lead); font-style: italic; }
+  .letter .role { color: var(--muted); margin-top: 4px; }
 
-  .pubs { list-style:none; margin:0; padding:0; }
-  .pubs li { padding:18px 0; border-bottom:1px dashed var(--line); display:grid; grid-template-columns:120px 1fr; gap:16px; }
-  .pubs .venue { font-weight:600; color:var(--rust); font-size:14px; padding-top:2px; }
-  .pubs .t { font-weight:600; }
-  .pubs .d { color:var(--muted); font-size:15px; }
+  /* papers: big names index */
+  .papers { padding: 40px 0 120px; }
+  .papers h2 { margin-bottom: 48px; }
+  .idx { list-style: none; margin: 0; padding: 0; }
+  .idx li { padding: 10px 0; }
+  .idx a { display: block; text-decoration: none; color: var(--muted); transition: color .2s, transform .25s var(--ease); }
+  .idx .t { font-size: var(--step-head); font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+  .idx .v { font-size: var(--step-body); font-weight: 400; letter-spacing: 0; margin-left: 14px; color: var(--muted); }
+  .idx li.on a, .idx a:hover, .idx a:focus-visible { color: var(--ink); }
+  .idx li.on a { transform: translateX(8px); }
+  .idx li.on .v { color: var(--accent); }
+  .idx .d { display: none; max-width: 34em; color: var(--ink); margin-top: 10px; }
+  .idx li.on .d { display: block; animation: fadein .35s var(--ease); }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
+  .papers .all { margin-top: 32px; }
 
-  .romagna { background: var(--card); }
-  .quote { font-family:"Young Serif", serif; font-size:clamp(24px,4vw,34px); line-height:1.3; margin:0 0 30px; }
-  .quote span { color:var(--muted); font-size:16px; font-style:normal; display:block; margin-top:8px; font-family:Karla, sans-serif; }
+  /* live thing: sampler */
+  .sampler { background: var(--surface); padding: clamp(24px, 3vw, 44px); margin-bottom: 140px; }
+  .sampler h2 { font-size: var(--step-head); }
+  .sampler p { margin: 14px 0 22px; max-width: 34em; }
+  .sampler canvas { width: 100%; height: auto; aspect-ratio: 16/10; display: block; background: #000; }
+  .ctl { display: flex; align-items: center; gap: 18px; margin-top: 18px; flex-wrap: wrap; }
+  
+  .ctl input[type=range] { flex: 1; min-width: 160px; accent-color: var(--accent); height: 32px; }
+  .ctl output { font-variant-numeric: tabular-nums; min-width: 6ch; }
+  .ctl button { font: inherit; font-weight: 500; background: var(--accent); color: var(--bg); border: 0; padding: 10px 18px; cursor: pointer; transition: transform .15s var(--ease), background .2s; }
+  .ctl button:hover { background: var(--ink); }
+  .ctl button:active { transform: scale(.96); }
 
-  footer { padding:40px 0 60px; color:var(--muted); font-size:14px; border-top:1px solid var(--line); }
-  footer .links { display:flex; gap:18px; flex-wrap:wrap; margin-bottom:12px; }
+  /* now: giant word + filled bars */
+  .now { padding: 0 0 160px; container-type: inline-size; max-width: 640px; }
+  .now h2 { font-size: 46cqw; line-height: .8; letter-spacing: -0.04em; text-transform: uppercase; margin-left: -.04em; }
+  .bars { margin-top: 20px; display: grid; gap: 6px; }
+  .bars details { background: var(--surface); }
+  .bars summary { list-style: none; cursor: pointer; min-height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-weight: 500; transition: background .2s; }
+  .bars summary::-webkit-details-marker { display: none; }
+  .bars summary::after { content: "+"; font-size: 26px; color: var(--accent); transition: transform .25s var(--ease); }
+  .bars details[open] summary::after { transform: rotate(45deg); }
+  .bars summary:hover { background: #2d221b; }
+  .bars ul { list-style: none; margin: 0; padding: 4px 18px 20px; display: grid; gap: 14px; }
+  .bars li { display: flex; justify-content: space-between; gap: 16px; }
+  .bars li span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-  @media (max-width:560px) {
-    nav ul { gap:14px; }
-    .pubs li { grid-template-columns:1fr; gap:4px; }
+  .inline-pic { display: none; }
+
+  /* ---------- ferrari band (breaks the split) ---------- */
+  .rosso { background: var(--rosso); color: var(--rosso-ink); padding: 160px var(--m); display: grid; grid-template-columns: 5fr 7fr; gap: clamp(28px, 4vw, 72px); align-items: start; }
+  .rosso figure { margin: 0; overflow: hidden; }
+  .rosso img { width: 100%; aspect-ratio: 3/2; object-fit: cover; transition: transform 1.2s var(--ease); }
+  .rosso figure:hover img { transform: scale(1.04); }
+  .rosso figcaption { font-size: var(--step-small); margin-top: 10px; }
+  .rosso h2 { font-size: var(--step-name); letter-spacing: -0.04em; }
+  .rosso p { margin-top: 24px; max-width: 30em; }
+  .rosso .me { margin-top: 40px; max-width: 220px; }
+  .rosso .me img { aspect-ratio: 3/4; }
+
+
+  /* ---------- romagna ---------- */
+  .romagna { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 120px); padding: 160px var(--m) 40px; }
+  .romagna h2 { font-size: var(--step-name); letter-spacing: -0.04em; }
+  .gallo { width: min(100%, 420px); height: auto; color: var(--accent); margin: 40px 0 8px; display: block; }
+  .detto p:first-child { font-size: var(--step-head); font-weight: 600; letter-spacing: -0.02em; line-height: 1; color: var(--accent); }
+  .detto .src, .verse .src { margin-top: 12px; color: var(--muted); max-width: 30em; }
+  blockquote { margin: 0 0 48px; }
+  .verse p:first-child { font-size: var(--step-lead); font-style: italic; line-height: 1.35; }
+  .fav { padding-top: 12px; }
+  .fav h3 { font-size: var(--step-lead); margin-bottom: 28px; }
+  .fav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; }
+  .fav li { display: grid; grid-template-columns: clamp(110px, 14vw, 200px) 1fr; gap: 28px; align-items: start; }
+  .fav img { width: 100%; height: auto; aspect-ratio: 3/4; object-fit: cover; transition: transform .4s var(--ease); }
+  .fav li:hover img { transform: rotate(-1.5deg) scale(1.03); }
+  .fav strong { display: block; font-size: var(--step-head); font-weight: 600; letter-spacing: -0.03em; line-height: 1; margin: 6px 0 12px; }
+  .fav .when { color: var(--accent); font-weight: 500; }
+  .fav li span:last-child { display: block; max-width: 30em; }
+
+  /* ---------- contact band ---------- */
+  .contact { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; padding: 160px var(--m) 120px; align-items: start; }
+  .contact h2 { grid-column: 1 / -1; font-size: var(--step-head); margin-bottom: 12px; }
+  .contact .say { grid-column: 1 / 6; font-size: var(--step-lead); line-height: 1.15; letter-spacing: -0.01em; }
+  .contact img { grid-column: 8 / 10; width: 100%; height: auto; max-width: 170px; aspect-ratio: 1; object-fit: cover; object-position: 30% 40%; }
+  .contact .reach { grid-column: 10 / 13; }
+  .contact .q { font-weight: 500; }
+  .contact .reach a { display: block; margin-top: 12px; width: max-content; max-width: 100%; overflow-wrap: anywhere; }
+  .contact .where { margin-top: 18px; color: var(--muted); }
+
+  /* ---------- footer on the last photograph ---------- */
+  footer { position: relative; isolation: isolate; min-height: 100svh; color: var(--rosso-ink); overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 32px var(--m) 40px; }
+  footer > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: brightness(.55); z-index: -1; }
+  footer .top { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  footer .top nav { display: flex; gap: 22px; flex-wrap: wrap; }
+  footer a { color: var(--rosso-ink); }
+  footer .word { font-size: var(--step-name); font-weight: 600; letter-spacing: -0.045em; line-height: .85; text-transform: lowercase; white-space: nowrap; }
+  footer .credits { font-size: 14px; max-width: 120ch; margin-top: 18px; }
+  footer .credits a { text-decoration-color: currentColor; text-decoration-thickness: 1px; }
+
+  /* ---------- entrances ---------- */
+  .rise { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--i, 0) * 75ms); }
+  .rise.in { opacity: 1; transform: none; }
+  .no-js .rise { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    .rise { opacity: 1; transform: none; }
+  }
+
+  /* ---------- tablet & phone ---------- */
+  @media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .stage { position: relative; height: 58svh; }
+    .stage figure { inset: 12px 12px 0; }
+    .stage figure:not(:first-child) { display: none; }
+    .stage figure:first-child, .stage figure:first-child figcaption { opacity: 1; visibility: visible; display: block; }
+    .col { padding: 0 20px; }
+    .hero { min-height: 0; }
+    h1.name { position: relative; bottom: auto; right: auto; font-size: 13.5vw; margin: -5vw 0 20px; }
+    .hero .lede { font-size: 20px; max-width: none; }
+    .nav { top: 24px; right: 24px; gap: 16px; }
+    .nav a:not(.act) { display: none; }
+    .letter { padding: 96px 0; }
+    .inline-pic { display: block; margin: 0 0 40px; }
+    .inline-pic img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+    .inline-pic figcaption { font-size: var(--step-small); margin-top: 8px; color: var(--muted); }
+    .idx .t { font-size: 9.5vw; }
+    .idx a { color: var(--ink); }
+    .idx .d { display: block; }
+    .idx li { padding: 14px 0; }
+    .sampler { margin-left: -20px; margin-right: -20px; }
+    .rosso { grid-template-columns: 1fr; padding: 96px 20px; }
+    .romagna { grid-template-columns: 1fr; padding: 96px 20px 24px; }
+    .gallo { max-width: 260px; }
+    .fav li { grid-template-columns: 110px 1fr; gap: 18px; }
+    .contact { grid-template-columns: 96px 1fr; padding: 96px 20px; }
+    .contact h2, .contact .say { grid-column: 1 / -1; }
+    .contact .say { font-size: 24px; }
+    .contact img { grid-column: 1; max-width: 96px; }
+    .contact .reach { grid-column: 2; }
+    footer { min-height: 88svh; padding: 24px 20px 32px; }
+    footer .word { font-size: 14.5vw; }
   }
 </style>
 </head>
-<body>
+<body class="no-js">
+<script>document.body.classList.remove('no-js')</script>
 
-<div class="wrap">
-  <nav>
-    <a class="me" href="#">F. Pivi</a>
-    <ul>
-      <li><a href="#research">Research</a></li>
-      <li><a href="#papers">Papers</a></li>
-      <li><a href="#romagna">Off-lab</a></li>
-    </ul>
-  </nav>
+<nav class="nav" aria-label="Main">
+  <a href="#about">About</a>
+  <a href="#papers">Papers</a>
+  <a href="#now">Now</a>
+  <a href="#ferrari">Ferrari</a>
+  <a href="#romagna">Romagna</a>
+  <a class="act" href="#contact">Write to me</a>
+</nav>
 
-  <header class="hero">
-    <h1>Francesco Pivi<br><em>da Romagna</em></h1>
-    <p class="lede"><strong>Ciò, burdèl!</strong>
-      PhD student in Computer Science &amp; Engineering at the <strong>University of Bologna</strong>,
-      currently a visiting researcher at <strong>Cornell Tech</strong> in New York with Prof. Andrea Lodi.
-      I work on generative AI and mathematical optimization, and on making both fast on GPUs.
-      <small>Raised on piadina, Apennine trails and Sunday afternoons watching the red cars.</small>
-    </p>
-    <div class="stripe" aria-hidden="true"></div>
-  </header>
+<div class="split">
+  <aside class="stage" aria-label="Places">
+    <figure class="on" data-for="top">
+      <img src="assets/forli-piazza-aurelio-saffi-palazzo-municipale-01.jpg" width="1600" height="998" alt="Piazza Saffi in Forlì: the brick town hall with its clock tower and red lamp posts" style="object-position:40% 50%">
+      <figcaption>Piazza Saffi, Forlì. Home</figcaption>
+    </figure>
+    <figure data-for="about">
+      <img src="assets/monte-fumaiolo-e-montalto.jpg" width="1600" height="1030" alt="Wooded slopes and a rocky crest of Monte Fumaiolo above hay fields in the Romagna Apennines" loading="lazy">
+      <figcaption>Monte Fumaiolo, the Romagna Apennines</figcaption>
+    </figure>
+    <figure data-for="papers">
+      <img src="assets/view-bologna-towers-may-2009.jpg" width="1600" height="1200" alt="Red roofs of Bologna seen from above, framed by two medieval towers" loading="lazy">
+      <figcaption>Bologna, from the Asinelli tower</figcaption>
+    </figure>
+    <figure data-for="now">
+      <img src="assets/cornell-tech.jpg" width="665" height="1182" alt="The Cornell Tech campus on Roosevelt Island on a clear day" loading="lazy">
+      <figcaption>Cornell Tech, Roosevelt Island</figcaption>
+    </figure>
+  </aside>
 
-  <!-- Apennine ridge, hand-drawn path -->
-  <svg class="ridge" viewBox="0 0 880 120" aria-hidden="true" preserveAspectRatio="none">
-    <path d="M0 120 L0 92 L70 70 L120 82 L190 40 L240 64 L300 30 L350 58 L420 12 L470 50 L530 36 L600 72 L660 44 L720 66 L790 38 L880 74 L880 120 Z" fill="currentColor" opacity=".18"/>
-    <path d="M0 120 L0 104 L90 88 L160 98 L230 72 L310 92 L380 66 L450 90 L540 70 L620 96 L700 78 L790 94 L880 84 L880 120 Z" fill="currentColor" opacity=".35"/>
-  </svg>
+  <main class="col">
+    <header class="hero" id="top">
+      <h1 class="name">francesco pivi</h1>
+      <p class="lede rise">PhD student from Romagna. I make diffusion models undo blur and GPUs prove bounds. This year: Cornell Tech, New York.</p>
+      <p class="rise" style="--i:1"><a class="go" href="#papers">See the papers</a></p>
+    </header>
+
+    <section class="letter" id="about" aria-labelledby="about-h">
+      <h2 id="about-h" class="rise">Ciao, I'm Francesco</h2>
+      <p class="rise">I grew up in Forlì, in Romagna, where the Apennines start an hour from the sea and everybody has an opinion about piadina.</p>
+      <p class="rise" style="--i:1">I'm a PhD student in Computer Science and Engineering at the University of Bologna, on a scholarship for text-to-image AI.</p>
+      <p class="rise" style="--i:2">My work sits between two things that rarely share a room: <mark>generative models</mark> (diffusion and flow matching) and mathematical optimization with guarantees. I like methods that are fast because they use the GPU well, and trustworthy because they come with a certificate.</p>
+      <p class="rise" style="--i:3">This year I'm a visiting researcher at Cornell Tech on Roosevelt Island, working with Andrea Lodi on first-order methods inside branch-and-bound. I'm a Ferrari PhD fellow, building generative tools for car design.</p>
+      <p class="rise" style="--i:4">When I'm not on a GPU I'm on a ridge somewhere, or watching the red cars on a Sunday.</p>
+      <p class="sign rise" style="--i:5">Francesco Pivi</p>
+      <p class="role">PhD student, University of Bologna · Visiting researcher, Cornell Tech</p>
+    </section>
+
+    <section class="papers" id="papers" aria-labelledby="papers-h">
+      <h2 id="papers-h" class="rise">Papers</h2>
+      <figure class="inline-pic"><img src="assets/view-bologna-towers-may-2009.jpg" width="1600" height="1200" alt="Red roofs of Bologna framed by two medieval towers" loading="lazy"></figure>
+
+      <ul class="idx">
+        <li class="on rise"><a href="https://arxiv.org/abs/2605.12573"><span class="t">LAMP<span class="v">NeurIPS 2026</span></span></a>
+          <span class="d">Improving Diffusion Posterior Samplers with Lagged Temporal Corrections for Image Restoration. A plug-in that reuses the previous estimate: no retraining, no extra network calls. · Evangelista, Morotti, Pivi, Gabbrielli</span></span></li>
+        <li class="rise" style="--i:1"><a href="https://arxiv.org/abs/2610.26509"><span class="t">Primal-dual repairs<span class="v">2026</span></span></a>
+          <span class="d">First-Order Primal-Dual Repairs for Scalable Branch and Bound. Rigorous bounds from approximate iterates, batched on GPU: up to 100&times; faster than reference solvers on selected instances. · Pivi, Liu, Lodi</span></span></li>
+        <li class="rise" style="--i:2"><a href="https://arxiv.org/abs/2605.00632"><span class="t">BlenderRAG<span class="v">2026</span></span></a>
+          <span class="d">High-Fidelity 3D Object Generation via Retrieval-Augmented Code Synthesis. · Rondelli, Pivi, Gabbrielli</span></span></li>
+        <li class="rise" style="--i:3"><a href="https://arxiv.org/abs/2603.03334"><span class="t">CompMath-MCQ<span class="v">2026</span></span></a>
+          <span class="d">The CompMath-MCQ Dataset: Are LLMs Ready for Higher-Level Math? · Raimondi, Pivi, Evangelista, Gabbrielli</span></span></li>
+        <li class="rise" style="--i:4"><a href="https://arxiv.org/abs/2510.21210"><span class="t">Flow matching<span class="v">2025</span></span></a>
+          <span class="d">On the Flow Matching Interpretability. · Pivi, Gazza, Evangelista, Amadini, Gabbrielli</span></span></li>
+        <li class="rise" style="--i:5"><a href="https://scholar.google.com/citations?user=KxTudlMAAAAJ"><span class="t">Integra<span class="v">AAAI 2025 workshop</span></span></a>
+          <span class="d">Inclusive Technology for Enhanced Gradation and Review of Applicants: measuring and reducing bias when open LLMs screen résumés. · Pivi, Lombardi, Calegari, Rimondi</span></span></li>
+      </ul>
+      <p class="all"><a href="https://scholar.google.com/citations?user=KxTudlMAAAAJ">All papers on Google Scholar</a></p>
+    </section>
+
+    <section class="sampler" id="sampler" aria-labelledby="sampler-h">
+      <h2 id="sampler-h" class="rise">Run a sampler on the Dolomites</h2>
+      <p class="rise" style="--i:1">A diffusion model learns to walk back from pure noise to a picture. Drag the noise down, or press Run, and watch the Tre Cime come out of the static.</p>
+      <canvas id="cv" width="640" height="400" role="img" aria-label="The Tre Cime di Lavaredo above Lago di Misurina, mixed with Gaussian noise at the chosen level"></canvas>
+      <div class="ctl">
+        <label for="t">Noise</label>
+        <input id="t" type="range" min="0" max="1000" value="900" step="1">
+        <output id="tv" for="t">t = 900</output>
+        <button id="run" type="button">Run</button>
+      </div>
+    </section>
+
+    <section class="now" id="now" aria-labelledby="now-h">
+      <h2 id="now-h" class="rise">Now</h2>
+      <figure class="inline-pic"><img src="assets/cornell-tech.jpg" width="665" height="1182" alt="The Cornell Tech campus on Roosevelt Island" loading="lazy"></figure>
+
+      <div class="bars">
+        <details open class="rise"><summary>Cornell Tech, New York</summary>
+          <ul><li><span>Visiting researcher, Jacobs Technion–Cornell Institute</span><span>2025–26</span></li>
+          <li><span>With Prof. Andrea Lodi: first-order methods, bound certification</span><span>GPU</span></li>
+          <li><span>Parallel cut generation for mixed-integer programs</span><span>In progress</span></li></ul></details>
+        <details class="rise" style="--i:1"><summary>University of Bologna</summary>
+          <ul><li><span>PhD, Computer Science and Engineering, XL cycle</span><span>2024–</span></li>
+          <li><span>Teaching tutor, Artificial Intelligence</span><span>2025</span></li></ul></details>
+        <details class="rise" style="--i:2"><summary>Ferrari</summary>
+          <ul><li><span>Generative AI for car design: image generation and editing</span><span>FLUX, LoRA</span></li>
+          <li><span>3D reconstruction and asset pipelines</span><span>NeRF, TRELLIS</span></li></ul></details>
+        <details class="rise" style="--i:3"><summary>Off the laptop</summary>
+          <ul><li><span>Apennine ridges, Dolomite walls</span><span>Weekends</span></li>
+          <li><span>Formula 1, Scuderia Ferrari</span><span>Sundays</span></li>
+          <li><span>Hunting a real piadina in Manhattan</span><span>Ongoing</span></li></ul></details>
+      </div>
+    </section>
+  </main>
 </div>
 
-<section id="research">
-  <div class="wrap">
-    <h2>Research</h2>
-    <p class="sub">Where generative models meet optimization with guarantees.</p>
-    <div class="grid">
-      <div class="card">
-        <span class="tag">Inverse problems</span>
-        <h3>Diffusion posterior sampling</h3>
-        <p>Plug-in corrections for diffusion samplers in deblurring, super-resolution and inpainting, with no retraining and no extra network calls.</p>
-      </div>
-      <div class="card">
-        <span class="tag">Optimization</span>
-        <h3>Certified first-order methods</h3>
-        <p>Primal-dual methods (PDHG, Condat–Vũ) with repair steps that turn approximate iterates into rigorous bounds inside branch-and-bound.</p>
-      </div>
-      <div class="card">
-        <span class="tag">GPU</span>
-        <h3>Batched &amp; parallel solvers</h3>
-        <p>Solving many subproblems at once on the GPU, and parallel cut generation for mixed-integer programs.</p>
-      </div>
-      <div class="card">
-        <span class="tag">Industry · Ferrari</span>
-        <h3>Generative AI for car design</h3>
-        <p>Image generation, editing and 3D pipelines built with Ferrari S.p.A. for automotive design.</p>
-      </div>
-    </div>
+<section class="rosso" id="ferrari" aria-labelledby="ferrari-h">
+  <div>
+    <h2 id="ferrari-h" class="rise">Rosso corsa</h2>
+    <p class="rise" style="--i:1">Maranello is an hour up the Via Emilia from Bologna, and Imola is next door to home. Part of my PhD is with Ferrari: generative tools for design, from image generation and editing to 3D reconstruction.</p>
+    <p class="rise" style="--i:2">On Sundays I'm just a tifoso.</p>
+    <figure class="me rise" style="--i:3"><img src="assets/me-maranello.jpg" width="1205" height="1600" alt="Francesco smiling in front of the Ferrari product development centre at dusk" loading="lazy"><figcaption>Me, after a day at the Centro Sviluppo Prodotto</figcaption></figure>
   </div>
+  <figure class="rise">
+    <img src="assets/ferrari-museum.jpg" width="1600" height="1205" alt="A row of Scuderia Ferrari Formula 1 cars from different eras on display" loading="lazy">
+    <figcaption>Fifty years of Scuderia cars, Maranello</figcaption>
+  </figure>
 </section>
 
-<section id="papers">
-  <div class="wrap">
-    <h2>Papers</h2>
-    <p class="sub">Selected work.</p>
-    <ul class="pubs">
-      <li>
-        <div class="venue">NeurIPS 2026</div>
-        <div><div class="t">LAMP: Lagged Correction for Posterior Sampling</div>
-        <div class="d">A temporal correction that reuses the previous estimate inside diffusion samplers for imaging inverse problems.</div></div>
-      </li>
-      <li>
-        <div class="venue">Under review</div>
-        <div><div class="t">Certified first-order methods for combinatorial optimization</div>
-        <div class="d">With Liu and Lodi. GPU implementations up to two orders of magnitude faster than reference solvers on selected instances.</div></div>
-      </li>
-      <li>
-        <div class="venue">Contributions</div>
-        <div><div class="t">BlenderRAG · IFMN · CompMath-MCQ</div>
-        <div class="d">Retrieval-assisted 3D generation, generative models with thermodynamic constraints, and evaluating math skills of LLMs, with the Bologna group.</div></div>
-      </li>
+<section class="romagna" id="romagna" aria-labelledby="romagna-h">
+  <div class="gallo-side">
+    <h2 id="romagna-h" class="rise">Romagna mia</h2>
+    <svg class="gallo rise" style="--i:1" viewBox="0 0 200 190" role="img" aria-labelledby="gallo-t">
+      <title id="gallo-t">The rooster of Romagna, as stamped in rust on old Romagna linen</title>
+      <g fill="currentColor">
+        <path d="M70 120C55 110 50 95 52 80c1-10-2-18-6-22l-10 4 9-10c3-6 10-9 17-6 6 3 8 12 8 20 2 14 10 22 25 24 20 2 35-2 45-8 10 13 10 33-2 46-16 14-48 14-68-8z"/>
+        <path d="M48 46c-2-8 4-10 6-4 1-8 7-8 7-1 2-7 8-5 5 5z"/>
+        <path d="M46 60c-2 8 4 12 6 4z"/>
+      </g>
+      <g fill="none" stroke="currentColor" stroke-linecap="round">
+        <path stroke-width="7" d="M138 84c12-34 37-49 52-29M140 92c20-22 45-22 52 0M138 104c22-4 40 8 42 26"/>
+        <path stroke-width="5" d="M88 138l-2 32-10 6m10-6 8 7M106 138l2 32-8 7m8-7 9 6"/>
+        <path stroke="var(--bg)" stroke-width="4" d="M90 108c15 10 32 8 42-4M96 118c12 6 24 5 32-3"/>
+      </g>
+      <circle cx="56" cy="52" r="2.4" fill="var(--bg)"/>
+    </svg>
+    <blockquote class="detto rise" style="--i:2">
+      <p>«Tin bòta!»</p>
+      <p class="src">Hold tight, keep going. What every Romagnolo says before a climb, a deadline or a Sunday race.</p>
+    </blockquote>
+    <blockquote class="verse rise" style="--i:3">
+      <p>Romagna solatìa, dolce paese,<br>cui regnarono Guidi e Malatesta</p>
+      <p class="src">Giovanni Pascoli, <cite>Romagna</cite></p>
+    </blockquote>
+  </div>
+  <div class="fav">
+    <h3 class="rise">What I miss from New York</h3>
+    <ul>
+      <li class="rise"><img src="assets/tagliolini-tre-pini.jpg" width="360" height="480" alt="Tagliolini with clams, prawns and cherry tomatoes in a white shell-shaped dish" loading="lazy">
+        <div><span class="when">Summer</span><strong>Tagliolini golosi</strong><span>Ristorante Tre Pini, Lido di Classe. Clams, prawns, cherry tomatoes, the sea fifty metres away.</span></div></li>
+      <li class="rise" style="--i:1"><img src="assets/cotoletta-pellegrino.jpg" width="360" height="480" alt="Cotoletta alla bolognese covered in melted cheese sauce on a white plate" loading="lazy">
+        <div><span class="when">Winter</span><strong>Cotoletta alla bolognese</strong><span>Il Pellegrino, Bologna. Veal, prosciutto, Parmigiano, and nothing light about it.</span></div></li>
+      <li class="rise" style="--i:2"><img src="assets/cervia.jpg" width="360" height="480" alt="Two shadows on the sand of Cervia beach under a long striped kite" loading="lazy">
+        <div><span class="when">Always</span><strong>Cervia</strong><span>My favourite place in Romagna: the beach in the off season, a kite overhead, the pinewood behind.</span></div></li>
     </ul>
   </div>
 </section>
 
-<section id="romagna" class="romagna">
-  <div class="wrap">
-    <p class="quote">La Romagna è una terra dove si lavora sodo e si mangia meglio.
-      <span>Romagna works hard and eats better. I try to keep up with both.</span></p>
-    <div class="grid">
-      <div class="card">
-        <span class="tag">⛰ Mountains</span>
-        <h3>Up high</h3>
-        <p>From the Apennines behind home to the Dolomites: the best place to think about a proof is halfway up a climb.</p>
-      </div>
-      <div class="card">
-        <span class="tag" style="color:var(--rosso)">🏎 Ferrari</span>
-        <h3>Rosso corsa</h3>
-        <p>Imola is next door, Maranello up the road. Tifoso since forever, and lucky enough to do research with them.</p>
-      </div>
-      <div class="card">
-        <span class="tag">🗽 New York</span>
-        <h3>Roosevelt Island</h3>
-        <p>Now at Cornell Tech, still looking for a piadina worth the name in Manhattan. Suggestions welcome.</p>
-      </div>
-    </div>
+<section class="contact" id="contact" aria-labelledby="contact-h">
+  <h2 id="contact-h" class="rise">Contact</h2>
+  <p class="say rise">Write to me about diffusion, certified optimization, a research visit, or the best piadina in New York.</p>
+  <img class="rise" style="--i:1" src="assets/central-park.jpg" width="768" height="1024" alt="A maple in full autumn orange in Central Park" loading="lazy">
+  <div class="reach rise" style="--i:2">
+    <p class="q">Working on something close?</p>
+    <a href="mailto:francesco.pivi2@unibo.it">francesco.pivi2@unibo.it</a>
+    <a href="https://github.com/francesco-source">github.com/francesco-source</a>
+    <a href="https://scholar.google.com/citations?user=KxTudlMAAAAJ">Google Scholar</a>
+    <p class="where">Roosevelt Island, New York · Bologna, Italy</p>
   </div>
 </section>
 
 <footer>
-  <div class="wrap">
-    <div class="links">
-      <a href="https://github.com/francesco-source">GitHub</a>
-      <!-- add: <a href="mailto:you@example.com">Email</a> · Google Scholar · LinkedIn -->
-    </div>
-    © 2026 Francesco Pivi · Fatto in Romagna, scritto a New York.
+  <img src="assets/lago-di-misurina-tre-cime-di-lavaredo.jpg" width="1600" height="1066" alt="" loading="lazy">
+  <div class="top">
+    <nav aria-label="Footer">
+      <a href="#about">About</a><a href="#papers">Papers</a><a href="#now">Now</a><a href="#ferrari">Ferrari</a><a href="#romagna">Romagna</a><a href="https://scholar.google.com/citations?user=KxTudlMAAAAJ">Scholar</a>
+    </nav>
+    <span>Tre Cime di Lavaredo, from Lago di Misurina</span>
+  </div>
+  <div>
+    <p class="word" aria-hidden="true">francesco pivi</p>
+    <p class="credits">© 2026 Francesco Pivi. Photographs of Maranello, Cornell Tech, Central Park, the two dishes and Cervia are mine. Other pictures: <a href="https://commons.wikimedia.org/w/index.php?curid=72256639">“Forlì, piazza Aurelio Saffi, palazzo municipale 01”</a> by Sailko, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=16984131">“Monte Fumaiolo e Montalto”</a> by Massimo Burioni, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=140723816">“View-Bologna-towers-May-2009”</a> by Acediscovery, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=177412300">“Lago di Misurina Tre Cime di Lavaredo 1”</a> by kallerna, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. All via Wikimedia Commons.</p>
   </div>
 </footer>
 
+<script>
+// Entrances
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+document.querySelectorAll('.rise').forEach(el => io.observe(el));
+
+// Stage: swap the fixed picture as sections arrive
+const figs = [...document.querySelectorAll('.stage figure')];
+const so = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) figs.forEach(f => f.classList.toggle('on', f.dataset.for === e.target.dataset.stage));
+}), { rootMargin: '-45% 0px -45% 0px' });
+[['#top', 'top'], ['#about', 'about'], ['#papers', 'papers'], ['#sampler', 'papers'], ['#now', 'now']].forEach(([s, k]) => {
+  const el = document.querySelector(s); el.dataset.stage = k; so.observe(el);
+});
+
+// Papers index: hover/focus moves the active item
+const items = [...document.querySelectorAll('.idx li')];
+items.forEach(li => ['mouseenter', 'focusin'].forEach(ev => li.addEventListener(ev, () => items.forEach(x => x.classList.toggle('on', x === li)))));
+
+// The live thing: forward diffusion x_t = sqrt(abar) x0 + sqrt(1-abar) eps, cosine schedule
+(() => {
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+  const range = document.getElementById('t'), out = document.getElementById('tv'), run = document.getElementById('run');
+  const img = new Image(); img.src = 'assets/lago-di-misurina-tre-cime-di-lavaredo.jpg';
+  let x0 = null, eps = null;
+  const frame = ctx.createImageData(W, H);
+  const gauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  function draw() {
+    out.value = 't = ' + range.value;
+    if (!x0) return;
+    const t = range.value / 1000, a = Math.cos((t + 0.008) / 1.008 * Math.PI / 2) ** 2, sa = Math.sqrt(a), sn = Math.sqrt(1 - a), d = frame.data;
+    for (let i = 0, j = 0; i < d.length; i += 4, j += 3) {
+      d[i] = (sa * x0[j] + sn * eps[j] + 1) * 127.5;
+      d[i + 1] = (sa * x0[j + 1] + sn * eps[j + 1] + 1) * 127.5;
+      d[i + 2] = (sa * x0[j + 2] + sn * eps[j + 2] + 1) * 127.5;
+      d[i + 3] = 255;
+    }
+    ctx.putImageData(frame, 0, 0);
+  }
+  img.onload = () => {
+    const s = Math.max(W / img.width, H / img.height), w = img.width * s, h = img.height * s;
+    ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+    try {
+      const px = ctx.getImageData(0, 0, W, H).data;
+      x0 = new Float32Array(W * H * 3); eps = new Float32Array(W * H * 3);
+      for (let i = 0, j = 0; i < px.length; i += 4, j += 3) for (let c = 0; c < 3; c++) { x0[j + c] = px[i + c] / 127.5 - 1; eps[j + c] = gauss(); }
+      draw();
+    } catch (e) { /* opened from file://: the canvas is tainted, so the clean picture stays */ }
+  };
+  range.addEventListener('input', draw);
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  run.addEventListener('click', () => {
+    if (+range.value === 0) range.value = 1000;
+    if (still) { range.value = 0; return draw(); }
+    const start = +range.value, t0 = performance.now(), dur = 2400 * start / 1000;
+    (function step(now) {
+      const k = Math.min(1, (now - t0) / dur);
+      range.value = Math.round(start * (1 - k)); draw();
+      if (k < 1) requestAnimationFrame(step);
+    })(t0);
+  });
+})();
+</script>
 </body>
 </html>

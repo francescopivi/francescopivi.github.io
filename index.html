@@ -7,15 +7,15 @@
 <meta name="description" content="Francesco Pivi: PhD student at the University of Bologna, visiting researcher at Cornell Tech. Diffusion models, certified optimization on GPUs, generative AI with Ferrari. From Romagna.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,500;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* Palette from the subject: Bologna brick at night, rosso corsa, Dolomite stone */
   :root {
-    --bg: #15100d;
-    --surface: #221914;
-    --ink: #f1f0ee;
-    --muted: #bdb7b0;
-    --accent: #ff4136;
+    --bg: #fbfbfb;
+    --surface: #f1f2f4;
+    --ink: #16181d;
+    --muted: #5c6068;
+    --accent: #b3121f;
     --rosso: #c8102e;
     --rosso-ink: #ffffff;
     --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
@@ -28,19 +28,19 @@
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-body)/1.5 "Zilla Slab", Georgia, serif; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-body)/1.6 "Source Sans 3", system-ui, sans-serif; }
   img { display: block; max-width: 100%; height: auto; }
   a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; transition: color .2s; }
   a:hover { color: var(--accent); }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-  h1, h2, h3 { font-weight: 600; letter-spacing: -0.025em; line-height: 1; margin: 0; }
+  h1, h2, h3 { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; letter-spacing: -0.025em; line-height: 1; margin: 0; }
   h2 { font-size: var(--step-head); }
-  p { margin: 0; }
+  p { margin: 0; max-width: 68ch; }
 
   /* ---------- nav ---------- */
   .nav { position: absolute; top: var(--m); right: var(--m); z-index: 5; display: flex; gap: 26px; font-size: inherit; }
   .nav a { text-decoration: none; }
-  .nav a.act { color: var(--bg); background: var(--accent); padding: 8px 14px; }
+  .nav a.act { color: #fff; background: var(--accent); padding: 8px 14px; }
   .nav a.act:hover { color: var(--bg); background: var(--ink); }
 
   /* ---------- split stage ---------- */
@@ -58,11 +58,11 @@
 
   /* hero */
   .hero { min-height: 100svh; position: relative; display: flex; flex-direction: column; justify-content: center; }
-  .hero .lede { max-width: 26ch; font-size: var(--step-lead); line-height: 1.35; }
-  .hero .go { display: inline-block; margin-top: 32px; font-weight: 500; background: var(--accent); color: var(--bg); text-decoration: none; padding: 12px 22px; transition: transform .15s var(--ease), background .2s; }
+  .hero .lede { max-width: 34ch; font-size: var(--step-lead); line-height: 1.35; }
+  .hero .go { display: inline-block; margin-top: 32px; font-weight: 500; background: var(--accent); color: #fff; text-decoration: none; padding: 12px 22px; transition: transform .15s var(--ease), background .2s; }
   .hero .go:hover { background: var(--ink); color: var(--bg); }
   .hero .go:active { transform: scale(.97); }
-  h1.name { position: absolute; bottom: 40px; right: 0; font-size: var(--step-name); font-weight: 600; letter-spacing: -0.04em; line-height: .9; white-space: nowrap; text-transform: lowercase; transform-origin: right bottom; z-index: 4; }
+  h1.name { margin-bottom: 28px; font-size: clamp(48px, 6.4vw, 108px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; white-space: nowrap; transform-origin: right bottom; z-index: 4; }
   @supports (animation-timeline: scroll()) {
     h1.name { animation: shrink linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
     @keyframes shrink { to { transform: scale(.93); } }
@@ -72,7 +72,7 @@
   .letter { max-width: 34em; padding: 160px 0; }
   .letter h2 { font-size: var(--step-head); margin-bottom: 28px; }
   .letter p + p { margin-top: 1em; }
-  .letter mark { background: var(--rosso); color: var(--rosso-ink); padding: .1em .35em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .letter mark { background: none; color: inherit; font-weight: 600; }
   .letter .sign { margin-top: 36px; font-size: var(--step-lead); font-style: italic; }
   .letter .role { color: var(--muted); margin-top: 4px; }
 
@@ -82,7 +82,7 @@
   .idx { list-style: none; margin: 0; padding: 0; }
   .idx li { padding: 10px 0; }
   .idx a { display: block; text-decoration: none; color: var(--muted); transition: color .2s, transform .25s var(--ease); }
-  .idx .t { font-size: var(--step-head); font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+  .idx .t { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(28px, 2.6vw, 42px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
   .idx .v { font-size: var(--step-body); font-weight: 400; letter-spacing: 0; margin-left: 14px; color: var(--muted); }
   .idx li.on a, .idx a:hover, .idx a:focus-visible { color: var(--ink); }
   .idx li.on a { transform: translateX(8px); }
@@ -101,20 +101,20 @@
   
   .ctl input[type=range] { flex: 1; min-width: 160px; accent-color: var(--accent); height: 32px; }
   .ctl output { font-variant-numeric: tabular-nums; min-width: 6ch; }
-  .ctl button { font: inherit; font-weight: 500; background: var(--accent); color: var(--bg); border: 0; padding: 10px 18px; cursor: pointer; transition: transform .15s var(--ease), background .2s; }
+  .ctl button { font: inherit; font-weight: 500; background: var(--accent); color: #fff; border: 0; padding: 10px 18px; cursor: pointer; transition: transform .15s var(--ease), background .2s; }
   .ctl button:hover { background: var(--ink); }
   .ctl button:active { transform: scale(.96); }
 
   /* now: giant word + filled bars */
   .now { padding: 0 0 160px; container-type: inline-size; max-width: 640px; }
-  .now h2 { font-size: 46cqw; line-height: .8; letter-spacing: -0.04em; text-transform: uppercase; margin-left: -.04em; }
+  .now h2 { font-size: var(--step-head); }
   .bars { margin-top: 20px; display: grid; gap: 6px; }
   .bars details { background: var(--surface); }
   .bars summary { list-style: none; cursor: pointer; min-height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-weight: 500; transition: background .2s; }
   .bars summary::-webkit-details-marker { display: none; }
   .bars summary::after { content: "+"; font-size: 26px; color: var(--accent); transition: transform .25s var(--ease); }
   .bars details[open] summary::after { transform: rotate(45deg); }
-  .bars summary:hover { background: #2d221b; }
+  .bars summary:hover { background: #e4e6ea; }
   .bars ul { list-style: none; margin: 0; padding: 4px 18px 20px; display: grid; gap: 14px; }
   .bars li { display: flex; justify-content: space-between; gap: 16px; }
   .bars li span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -122,12 +122,12 @@
   .inline-pic { display: none; }
 
   /* ---------- ferrari band (breaks the split) ---------- */
-  .rosso { background: var(--rosso); color: var(--rosso-ink); padding: 160px var(--m); display: grid; grid-template-columns: 5fr 7fr; gap: clamp(28px, 4vw, 72px); align-items: start; }
+  .rosso { background: var(--surface); color: var(--ink); padding: 160px var(--m); display: grid; grid-template-columns: 5fr 7fr; gap: clamp(28px, 4vw, 72px); align-items: start; }
   .rosso figure { margin: 0; overflow: hidden; }
   .rosso img { width: 100%; aspect-ratio: 3/2; object-fit: cover; transition: transform 1.2s var(--ease); }
   .rosso figure:hover img { transform: scale(1.04); }
   .rosso figcaption { font-size: var(--step-small); margin-top: 10px; }
-  .rosso h2 { font-size: var(--step-name); letter-spacing: -0.04em; }
+  .rosso h2 { font-size: var(--step-head); }
   .rosso p { margin-top: 24px; max-width: 30em; }
   .rosso .me { margin-top: 40px; max-width: 220px; }
   .rosso .me img { aspect-ratio: 3/4; }
@@ -135,19 +135,19 @@
 
   /* ---------- romagna ---------- */
   .romagna { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 120px); padding: 160px var(--m) 40px; }
-  .romagna h2 { font-size: var(--step-name); letter-spacing: -0.04em; }
-  .gallo { width: min(100%, 420px); height: auto; color: var(--accent); margin: 40px 0 8px; display: block; }
-  .detto p:first-child { font-size: var(--step-head); font-weight: 600; letter-spacing: -0.02em; line-height: 1; color: var(--accent); }
+  .romagna h2 { font-size: var(--step-head); }
+  .gallo { width: min(100%, 150px); height: auto; color: var(--accent); margin: 40px 0 8px; display: block; }
+  .detto p:first-child { font-family: "Source Serif 4", Georgia, serif; font-size: var(--step-lead); font-weight: 600; letter-spacing: -0.02em; line-height: 1; color: var(--accent); }
   .detto .src, .verse .src { margin-top: 12px; color: var(--muted); max-width: 30em; }
   blockquote { margin: 0 0 48px; }
   .verse p:first-child { font-size: var(--step-lead); font-style: italic; line-height: 1.35; }
   .fav { padding-top: 12px; }
   .fav h3 { font-size: var(--step-lead); margin-bottom: 28px; }
   .fav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; }
-  .fav li { display: grid; grid-template-columns: clamp(110px, 14vw, 200px) 1fr; gap: 28px; align-items: start; }
+  .fav li { display: grid; grid-template-columns: clamp(100px, 10vw, 150px) 1fr; gap: 28px; align-items: start; }
   .fav img { width: 100%; height: auto; aspect-ratio: 3/4; object-fit: cover; transition: transform .4s var(--ease); }
   .fav li:hover img { transform: rotate(-1.5deg) scale(1.03); }
-  .fav strong { display: block; font-size: var(--step-head); font-weight: 600; letter-spacing: -0.03em; line-height: 1; margin: 6px 0 12px; }
+  .fav strong { display: block; font-family: "Source Serif 4", Georgia, serif; font-size: var(--step-lead); font-weight: 600; letter-spacing: -0.03em; line-height: 1; margin: 6px 0 12px; }
   .fav .when { color: var(--accent); font-weight: 500; }
   .fav li span:last-child { display: block; max-width: 30em; }
 
@@ -167,9 +167,9 @@
   footer .top { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
   footer .top nav { display: flex; gap: 22px; flex-wrap: wrap; }
   footer a { color: var(--rosso-ink); }
-  footer .word { font-size: var(--step-name); font-weight: 600; letter-spacing: -0.045em; line-height: .85; text-transform: lowercase; white-space: nowrap; }
+  footer .word { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(48px, 6.4vw, 108px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; white-space: nowrap; }
   footer .prompt { max-width: 46em; margin-top: 24px; font-style: italic; }
-  footer .credits { font-size: 14px; max-width: 120ch; margin-top: 18px; }
+  footer .credits { font-size: 14px; max-width: 80ch; margin-top: 18px; }
   footer .credits a { text-decoration-color: currentColor; text-decoration-thickness: 1px; }
 
   /* ---------- entrances ---------- */
@@ -191,7 +191,7 @@
     .stage figure:first-child, .stage figure:first-child figcaption { opacity: 1; visibility: visible; display: block; }
     .col { padding: 0 20px; }
     .hero { min-height: 0; }
-    h1.name { position: relative; bottom: auto; right: auto; font-size: 13.5vw; margin: -5vw 0 20px; }
+    h1.name { font-size: 11vw; margin: 28px 0 16px; }
     .hero .lede { font-size: 20px; max-width: none; }
     .nav { top: 24px; right: 24px; gap: 16px; }
     .nav a:not(.act) { display: none; }
@@ -206,7 +206,7 @@
     .sampler { margin-left: -20px; margin-right: -20px; }
     .rosso { grid-template-columns: 1fr; padding: 96px 20px; }
     .romagna { grid-template-columns: 1fr; padding: 96px 20px 24px; }
-    .gallo { max-width: 260px; }
+    .gallo { max-width: 120px; }
     .fav li { grid-template-columns: 110px 1fr; gap: 18px; }
     .contact { grid-template-columns: 96px 1fr; padding: 96px 20px; }
     .contact h2, .contact .say { grid-column: 1 / -1; }
@@ -214,7 +214,7 @@
     .contact img { grid-column: 1; max-width: 96px; }
     .contact .reach { grid-column: 2; }
     footer { min-height: 88svh; padding: 24px 20px 32px; }
-    footer .word { font-size: 14.5vw; }
+    footer .word { font-size: 11vw; }
   }
 </style>
 </head>
@@ -252,8 +252,8 @@
 
   <main class="col">
     <header class="hero" id="top">
-      <h1 class="name">francesco pivi</h1>
-      <p class="lede rise">PhD student from Romagna. I make diffusion models undo blur and GPUs prove bounds. This year: Cornell Tech, New York.</p>
+      <h1 class="name">Francesco Pivi</h1>
+      <p class="lede rise">PhD researcher in generative models and optimization at the University of Bologna, Ferrari PhD fellow, and visiting researcher at Cornell Tech, New York.</p>
       <p class="rise" style="--i:1"><a class="go" href="#papers">See the papers</a></p>
     </header>
 
@@ -399,7 +399,7 @@
     <span>Tre Cime di Lavaredo, from Lago di Misurina</span>
   </div>
   <div>
-    <p class="word" aria-hidden="true">francesco pivi</p>
+    <p class="word" aria-hidden="true">Francesco Pivi</p>
     <p class="prompt">Built by Claude Code from one prompt: “can u create my website using github? I want a romagnolo webisete pasionate about mountains and ferrari and at new york cornell tech, u know what i do right? I'm francesco pivi”. Then I added my Scholar link and my photos.</p>
     <p class="credits">© 2026 Francesco Pivi. Photographs of Maranello, Cornell Tech, Central Park, the two dishes and Cervia are mine. Other pictures: <a href="https://commons.wikimedia.org/w/index.php?curid=72256639">“Forlì, piazza Aurelio Saffi, palazzo municipale 01”</a> by Sailko, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=16984131">“Monte Fumaiolo e Montalto”</a> by Massimo Burioni, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=140723816">“View-Bologna-towers-May-2009”</a> by Acediscovery, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=177412300">“Lago di Misurina Tre Cime di Lavaredo 1”</a> by kallerna, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. All via Wikimedia Commons.</p>
   </div>

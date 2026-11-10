@@ -42,7 +42,10 @@
   .bar { position: sticky; top: 0; z-index: 10; background: var(--surface); transition: background .2s; }
   .bar.scrolled { background: var(--surface-c); }
   .bar-in { max-width: 1080px; margin: 0 auto; height: 64px; padding: 0 16px; display: flex; align-items: center; gap: 8px; }
-  .bar .brand { font: 500 20px/28px "Source Serif 4", Georgia, serif; color: var(--on-surface); text-decoration: none; margin-right: auto; }
+  .ridge { width: 96px; height: 26px; margin-right: auto; overflow: visible; }
+  .ridge path { fill: none; stroke: var(--on-surface); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .ridge circle { fill: var(--primary); }
+  .bar .brand { font: 500 20px/28px "Source Serif 4", Georgia, serif; color: var(--on-surface); text-decoration: none; }
   .bar nav { display: flex; gap: 4px; }
 
   /* buttons (M3) */
@@ -59,6 +62,9 @@
   /* chips */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 16px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--outline-variant); font: 500 14px/20px "DM Sans", sans-serif; letter-spacing: .1px; color: var(--on-surface-variant); }
+  button.chip { background: none; border: 0; cursor: pointer; transition: background .15s, transform .15s; }
+  button.chip:hover { background: var(--primary-container); }
+  button.chip:active { transform: scale(.96); }
   .chip .icon { font-size: 18px; color: var(--primary); }
 
   /* layout */
@@ -132,8 +138,15 @@
   /* contact + footer */
   .contact { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; background: var(--primary-container); color: var(--on-primary-container); }
   footer { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; color: var(--on-surface-variant); font-size: 13px; line-height: 18px; letter-spacing: .2px; display: grid; gap: 12px; }
-  footer a { color: inherit; }
+  footer { grid-auto-flow: column; justify-content: space-between; }
+  .linkish { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
+  dialog { border: 0; border-radius: var(--r-xl); padding: 24px; max-width: 520px; background: var(--surface-c-low); color: var(--on-surface); }
+  dialog::backdrop { background: rgba(20,20,19,.4); }
+  dialog p { margin: 12px 0 20px; } dialog a { color: var(--primary); }
 
+  .snack { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 140%); max-width: min(560px, calc(100% - 32px)); background: #30302e; color: #faf9f5; padding: 14px 20px; border-radius: 8px; font-size: 14px; line-height: 20px; transition: transform .25s; z-index: 20; }
+  .snack.on { transform: translate(-50%, 0); }
+  body.rosso { --primary: #c8102e; --primary-container: #ffd9d6; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 
   @media (max-width: 840px) {
@@ -153,6 +166,7 @@
 <header class="bar" id="bar">
   <div class="bar-in">
     <a class="brand" href="#top">Francesco Pivi</a>
+    <svg class="ridge" viewBox="0 0 120 32" aria-hidden="true"><path id="ridge" pathLength="1" d="M2 30 L18 18 L26 22 L40 6 L48 14 L56 4 L64 12 L70 8 L84 22 L96 16 L118 30"/><circle id="climber" r="3" cx="2" cy="30"/></svg>
     <nav aria-label="Main">
       <a class="btn text" href="#about">About</a>
       <a class="btn text" href="#papers">Papers</a>
@@ -167,7 +181,7 @@
   <section class="card elevated hero" aria-labelledby="name">
     <div class="txt">
       <div class="who">
-        <img class="avatar" src="assets/me-maranello.jpg" width="1205" height="1600" alt="Francesco Pivi">
+        <img class="avatar egg" data-egg="Yes, it's blurry. The diffusion model is still running." tabindex="0" role="button" src="assets/me-maranello.jpg" width="1205" height="1600" alt="Francesco Pivi">
         <div>
           <h1 id="name" class="display-s">Francesco Pivi</h1>
           <p class="muted">PhD researcher · Bologna &amp; New York</p>
@@ -175,10 +189,10 @@
       </div>
       <p>PhD researcher in generative models and optimization at the University of Bologna, Ferrari PhD fellow, and visiting researcher at Cornell Tech, New York. From Forlì, Romagna.</p>
       <div class="chips">
-        <span class="chip"><span class="icon" aria-hidden="true">blur_on</span>Diffusion models</span>
-        <span class="chip"><span class="icon" aria-hidden="true">functions</span>Certified optimization</span>
-        <span class="chip"><span class="icon" aria-hidden="true">memory</span>GPU computing</span>
-        <span class="chip"><span class="icon" aria-hidden="true">view_in_ar</span>3D generation</span>
+        <button class="chip egg" type="button" data-egg="I turn pure noise into pictures. Mostly cotolette."><span class="icon" aria-hidden="true">blur_on</span>Diffusion models</button>
+        <button class="chip egg" type="button" data-egg="Proven optimal, with a certificate. My parking is not."><span class="icon" aria-hidden="true">functions</span>Certified optimization</button>
+        <button class="chip egg" type="button" data-egg="My GPUs also heat my New York apartment. Two birds, one kernel."><span class="icon" aria-hidden="true">memory</span>GPU computing</button>
+        <button class="chip egg" type="button" data-egg="I can generate a 3D Ferrari. I cannot afford a real one."><span class="icon" aria-hidden="true">view_in_ar</span>3D generation</button>
       </div>
       <div class="actions">
         <a class="btn filled" href="#papers"><span class="icon" aria-hidden="true">article</span>Papers</a>
@@ -285,7 +299,7 @@
     <div class="sec-h"><span class="icon" aria-hidden="true">landscape</span><h2 id="romagna-h" class="headline-m">Romagna mia</h2></div>
     <div class="roma">
       <div class="card gallo-card">
-        <svg class="gallo" viewBox="0 0 200 190" role="img" aria-labelledby="gallo-t">
+        <svg class="gallo" id="gallo" style="cursor:pointer" viewBox="0 0 200 190" role="img" aria-labelledby="gallo-t">
           <title id="gallo-t">The rooster of Romagna</title>
           <g fill="currentColor">
             <path d="M70 120C55 110 50 95 52 80c1-10-2-18-6-22l-10 4 9-10c3-6 10-9 17-6 6 3 8 12 8 20 2 14 10 22 25 24 20 2 35-2 45-8 10 13 10 33-2 46-16 14-48 14-68-8z"/>
@@ -347,9 +361,15 @@
 </main>
 
 <footer>
-  <p>Built by Claude Code from one prompt: “can u create my website using github? I want a romagnolo webisete pasionate about mountains and ferrari and at new york cornell tech, u know what i do right? I'm francesco pivi”. Then I added my Scholar link and my photos.</p>
-  <p>© 2026 Francesco Pivi. Photographs of Maranello, Cornell Tech, Central Park, the two dishes and Cervia are mine. Other pictures, via Wikimedia Commons: <a href="https://commons.wikimedia.org/w/index.php?curid=72256639">“Forlì, piazza Aurelio Saffi, palazzo municipale 01”</a> by Sailko, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=16984131">“Monte Fumaiolo e Montalto”</a> by Massimo Burioni, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=140723816">“View-Bologna-towers-May-2009”</a> by Acediscovery, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=177412300">“Lago di Misurina Tre Cime di Lavaredo 1”</a> by kallerna, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+  <span>© 2026 Francesco Pivi</span>
+  <button class="linkish" type="button" onclick="document.getElementById('cred').showModal()">Photo credits</button>
 </footer>
+<div id="snack" class="snack" role="status" aria-live="polite"></div>
+<dialog id="cred" aria-labelledby="cred-h">
+  <h2 id="cred-h" class="title-l">Photo credits</h2>
+  <p class="body-m">The photos of Maranello, Cornell Tech, Central Park, the two dishes and Cervia are mine. The others come from Wikimedia Commons: <a href="https://commons.wikimedia.org/w/index.php?curid=72256639">“Forlì, piazza Aurelio Saffi, palazzo municipale 01”</a> by Sailko, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=16984131">“Monte Fumaiolo e Montalto”</a> by Massimo Burioni, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=140723816">“View-Bologna-towers-May-2009”</a> by Acediscovery, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; <a href="https://commons.wikimedia.org/w/index.php?curid=177412300">“Lago di Misurina Tre Cime di Lavaredo 1”</a> by kallerna, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+  <form method="dialog"><button class="btn filled">Close</button></form>
+</dialog>
 
 <script>
 // Top app bar takes the container tone once the page scrolls (M3 behaviour)
@@ -403,6 +423,35 @@ addEventListener('scroll', () => bar.classList.toggle('scrolled', scrollY > 4), 
     })(t0);
   });
 })();
+
+// Ridge next to the name: drawn as you read, the red dot climbs it
+const ridge = document.getElementById('ridge'), climber = document.getElementById('climber'), L = ridge.getTotalLength();
+function climb() {
+  const k = Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight));
+  ridge.style.strokeDashoffset = 1 - k;
+  const pt = ridge.getPointAtLength(k * L); climber.setAttribute('cx', pt.x); climber.setAttribute('cy', pt.y);
+}
+addEventListener('scroll', climb, { passive: true }); climb();
+
+// Easter eggs
+const snack = document.getElementById('snack'); let st;
+const say = msg => { snack.textContent = msg; snack.classList.add('on'); clearTimeout(st); st = setTimeout(() => snack.classList.remove('on'), 3600); };
+document.querySelectorAll('.egg').forEach(el => {
+  el.addEventListener('click', () => say(el.dataset.egg));
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' && el.tagName !== 'BUTTON') say(el.dataset.egg); });
+});
+let crows = 0;
+document.getElementById('gallo').addEventListener('click', () => say(++crows >= 5 ? 'Chicchirichì! Ok, ok, I\'m up.' : 'Keep poking the rooster…'));
+let typed = '';
+const konami = 'ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,b,a';
+let keys = [];
+addEventListener('keydown', e => {
+  keys = [...keys, e.key].slice(-10);
+  if (keys.join() === konami) { document.body.classList.toggle('rosso'); say('Rosso corsa mode. Forza Ferrari!'); }
+  typed = (typed + e.key).slice(-12).toLowerCase();
+  if (typed.endsWith('piadina')) say('Alta o bassa? Careful, in Romagna there is a wrong answer.');
+  if (typed.endsWith('tortellini')) say('Tortellini? You must be from Bologna. Cappelletti, please.');
+});
 </script>
 </body>
 </html>

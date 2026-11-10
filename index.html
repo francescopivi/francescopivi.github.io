@@ -144,6 +144,8 @@
     .snack { background: #f0eee6; color: #141413; }
   }
 
+  #life { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
   /* sampler */
   .sampler { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: center; }
   .sampler canvas { width: 100%; height: auto; aspect-ratio: 16/10; border-radius: var(--r-l); background: #000; display: block; }
@@ -207,6 +209,7 @@
 </head>
 <body>
 
+<canvas id="life" aria-hidden="true"></canvas>
 <header class="bar" id="bar">
   <div class="bar-in">
     <a class="brand" href="#top">Francesco Pivi</a>
@@ -543,6 +546,44 @@ document.querySelectorAll('main > section').forEach(el => rise.observe(el));
 // Places: duplicate the photos once so the strip loops without a gap
 (() => { const c = document.querySelector('.carousel');
   [...c.children].forEach(f => { const k = f.cloneNode(true); k.setAttribute('aria-hidden', 'true'); k.querySelector('img').alt = ''; c.appendChild(k); }); })();
+
+// Background: Conway's Game of Life on a torus, faint, about 8 generations a second
+const lifeStep = (g, w, h) => {
+  const n = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let c = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++)
+      if (dx || dy) c += g[((y + dy + h) % h) * w + (x + dx + w) % w];
+    n[y * w + x] = c === 3 || (c === 2 && g[y * w + x]) ? 1 : 0;
+  }
+  return n;
+};
+{ // self-check: a vertical blinker turns horizontal
+  const b = new Uint8Array(25); b[7] = b[12] = b[17] = 1;
+  const r = lifeStep(b, 5, 5); console.assert(r[11] && r[12] && r[13] && !r[7] && !r[17], 'life rule broken');
+}
+(() => {
+  const cv = document.getElementById('life'), ctx = cv.getContext('2d'), S = 12;
+  let w, h, g, gen = 0, last = '';
+  const seed = () => { g = new Uint8Array(w * h).map(() => Math.random() < .14 ? 1 : 0); gen = 0; };
+  const size = () => { cv.width = innerWidth; cv.height = innerHeight; w = Math.ceil(innerWidth / S); h = Math.ceil(innerHeight / S); seed(); };
+  const draw = () => {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--outline-variant');
+    for (let i = 0; i < g.length; i++) if (g[i]) ctx.fillRect((i % w) * S + 1, ((i / w) | 0) * S + 1, S - 2, S - 2);
+  };
+  size(); draw();
+  addEventListener('resize', () => { size(); draw(); });
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  setInterval(() => {
+    if (document.hidden) return;
+    g = lifeStep(g, w, h); gen++;
+    // reseed when the world dies or settles, so there is always something alive
+    if (gen % 40 === 0) { const k = g.join(''); if (k === last || !g.includes(1)) seed(); last = k; }
+    if (gen > 1500) seed();
+    draw();
+  }, 125);
+})();
 </script>
 </body>
 </html>

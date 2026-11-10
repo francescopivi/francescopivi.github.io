@@ -83,7 +83,7 @@
   .hero .who { display: flex; align-items: center; gap: 16px; }
   .avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: 20% 40%; flex: none; }
   .hero .media { position: relative; min-height: 420px; }
-  .hero .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .4s; }
   .cap { position: absolute; left: 12px; bottom: 12px; background: rgba(35,25,24,.72); color: #fff; padding: 4px 12px; border-radius: 8px; font-size: 13px; line-height: 18px; letter-spacing: .2px; }
   .thermo { position: absolute; top: 12px; right: 12px; display: inline-flex; align-items: center; gap: 6px; background: rgba(250,249,245,.92); color: #141413; padding: 6px 12px 6px 8px; border-radius: 8px; font: 500 14px/20px "DM Sans", sans-serif; }
   .thermo .icon { color: var(--primary); }
@@ -250,7 +250,7 @@
     <div class="media">
       <img id="forli" src="assets/forli-piazza-aurelio-saffi-palazzo-municipale-01.jpg" width="1600" height="998" alt="Piazza Saffi in Forlì: the brick town hall with its clock tower and red lamp posts" style="object-position:40% 50%">
       <span class="cap" id="forli-cap">Piazza Saffi, Forlì</span>
-      <span class="thermo" id="thermo" hidden><span class="icon" aria-hidden="true">thermostat</span><span id="thermo-t"></span></span>
+      <span class="thermo" id="thermo" hidden aria-live="off"><span class="icon" aria-hidden="true">thermostat</span><span id="thermo-t"></span></span>
     </div>
   </section>
 
@@ -524,20 +524,38 @@ document.querySelectorAll('.bib').forEach(b => b.addEventListener('click', async
 }));
 
 // Live temperature in Forlì (Open-Meteo, no key); below 8°C the hero shows Forlì in the snow
-const forliTemp = () => fetch('https://api.open-meteo.com/v1/forecast?latitude=44.2227&longitude=12.0407&current=temperature_2m&timezone=Europe%2FRome', { cache: 'no-store' })
-  .then(r => r.json()).then(d => {
-    const t = d.current.temperature_2m, at = d.current.time.slice(11, 16);
-    document.getElementById('thermo-t').textContent = `Forlì now: ${t.toFixed(1)}°C · ${at}`;
-    document.getElementById('thermo').hidden = false;
-    const img = document.getElementById('forli'), cold = t < 8, winter = img.src.includes('neve');
-    if (cold !== winter) {
-      img.src = cold ? 'assets/forli-saffi-neve.jpg' : 'assets/forli-piazza-aurelio-saffi-palazzo-municipale-01.jpg';
-      img.alt = cold ? 'Piazza Saffi in Forlì under snow, with a Christmas tree and the monument to Aurelio Saffi' : 'Piazza Saffi in Forlì: the brick town hall with its clock tower and red lamp posts';
-      img.style.objectPosition = cold ? '50% 60%' : '40% 50%';
-    }
-    document.getElementById('forli-cap').textContent = cold ? `Piazza Saffi, Forlì. It's ${Math.round(t)}°C there, so here it is in winter` : 'Piazza Saffi, Forlì';
-  }).catch(() => {});
-forliTemp(); setInterval(forliTemp, 10 * 60 * 1000);
+// Hero picture rotates Forlì → Maranello → New York, each with its live temperature (Open-Meteo, no key)
+(() => {
+  const places = [
+    { name: 'Forlì', cap: 'Piazza Saffi, Forlì', img: 'assets/forli-piazza-aurelio-saffi-palazzo-municipale-01.jpg', pos: '40% 50%',
+      alt: 'Piazza Saffi in Forlì: the brick town hall with its clock tower and red lamp posts',
+      cold: { img: 'assets/forli-saffi-neve.jpg', pos: '50% 60%', cap: 'Piazza Saffi, Forlì, in the snow', alt: 'Piazza Saffi in Forlì under snow' } },
+    { name: 'Maranello', cap: 'Ferrari Museum, Maranello', img: 'assets/ferrari-museum.jpg', pos: '30% 50%',
+      alt: 'A row of Scuderia Ferrari Formula 1 cars on display in Maranello' },
+    { name: 'New York', cap: 'Cornell Tech, Roosevelt Island, New York', img: 'assets/cornell-tech.jpg', pos: '50% 40%',
+      alt: 'The Cornell Tech campus on Roosevelt Island on a clear day' },
+  ];
+  const img = document.getElementById('forli'), cap = document.getElementById('forli-cap'), thermo = document.getElementById('thermo'), tt = document.getElementById('thermo-t');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let temps = [], i = 0;
+  [...places.map(p => p.img), places[0].cold.img].forEach(src => { new Image().src = src; });
+  const view = p => (p.cold && temps[0] && temps[0].t < 8) ? { ...p, ...p.cold } : p;
+  const show = () => {
+    const p = view(places[i]), r = temps[i];
+    img.src = p.img; img.alt = p.alt; img.style.objectPosition = p.pos; cap.textContent = p.cap;
+    if (r) { tt.textContent = `${places[i].name}: ${r.t.toFixed(1)}°C · ${r.at}`; thermo.hidden = false; }
+    img.style.opacity = 1;
+  };
+  const load = () => fetch('https://api.open-meteo.com/v1/forecast?latitude=44.2227,44.5265,40.7615&longitude=12.0407,10.8664,-73.9497&current=temperature_2m&timezone=Europe%2FRome,Europe%2FRome,America%2FNew_York', { cache: 'no-store' })
+    .then(r => r.json()).then(d => { temps = d.map(x => ({ t: x.current.temperature_2m, at: x.current.time.slice(11, 16) })); show(); }).catch(() => {});
+  load(); setInterval(load, 10 * 60 * 1000);
+  setInterval(() => {
+    if (document.hidden) return;
+    i = (i + 1) % places.length;
+    if (still) return show();
+    img.style.opacity = 0; setTimeout(show, 400);
+  }, 5000);
+})();
 
 // Sections rise in once as they enter the screen
 document.documentElement.classList.add('js');

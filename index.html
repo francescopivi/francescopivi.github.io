@@ -425,7 +425,7 @@
 </main>
 
 <footer>
-  <span>© 2026 Francesco Pivi</span>
+  <span>© 2026 Francesco Pivi · Draw on the background, or press G for a glider</span>
   <button class="linkish" type="button" onclick="document.getElementById('cred').showModal()">Photo credits</button>
 </footer>
 <div id="snack" class="snack" role="status" aria-live="polite"></div>
@@ -574,6 +574,26 @@ const lifeStep = (g, w, h) => {
   };
   size(); draw();
   addEventListener('resize', () => { size(); draw(); });
+
+  // Draw on the empty background: click or drag between the cards
+  const paint = e => {
+    const x = (e.clientX / S) | 0, y = (e.clientY / S) | 0;
+    for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) g[((y + dy) % h) * w + (x + dx) % w] = 1;
+    gen = 0; draw();
+  };
+  const onBackground = t => !t.closest('.card, .bar, a, button, input, dialog, .marquee, h2, p, footer');
+  let drawing = false;
+  addEventListener('pointerdown', e => { if (onBackground(e.target)) { e.preventDefault(); drawing = true; paint(e); } });
+  addEventListener('pointermove', e => { if (drawing) paint(e); });
+  addEventListener('pointerup', () => drawing = false);
+  addEventListener('pointercancel', () => drawing = false);
+  // G drops a glider at a random spot
+  addEventListener('keydown', e => {
+    if (e.key !== 'g' || e.target.closest('input, textarea')) return;
+    const ox = (Math.random() * (w - 3)) | 0, oy = (Math.random() * (h - 3)) | 0;
+    for (const [dx, dy] of [[1, 0], [2, 1], [0, 2], [1, 2], [2, 2]]) g[(oy + dy) * w + ox + dx] = 1;
+    gen = 0; draw();
+  });
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   setInterval(() => {
     if (document.hidden) return;

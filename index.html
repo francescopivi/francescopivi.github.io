@@ -109,17 +109,24 @@
   .pubs { padding: 8px 32px 24px; }
   .pub-grp { margin: 24px 0 4px; color: var(--primary); }
   .pub-list { list-style: none; margin: 0; padding: 0; }
-  .pub-list li { display: grid; grid-template-columns: 56px 1fr; gap: 16px; padding: 16px 0; box-shadow: 0 1px 0 var(--outline-variant); }
+  .pub-list li { display: grid; grid-template-columns: 72px 1fr; gap: 16px; padding: 16px 0; box-shadow: 0 1px 0 var(--outline-variant); }
   .pub-list li:last-child { box-shadow: none; }
   .pub-year { font: 500 14px/24px "DM Sans", sans-serif; color: var(--on-surface-variant); font-variant-numeric: tabular-nums; }
   .pub-title { font: 500 18px/26px "Source Serif 4", Georgia, serif; margin-bottom: 4px; }
   .pub-list b { font-weight: 600; color: var(--on-surface); }
   .pub-links { margin: 4px 0 0 -12px; gap: 0; }
   .pub-links .btn { height: 32px; }
-  .cv { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: start; }
-  .cv .card.flush > h3 + .list { padding-top: 4px; }
-  .areas { margin: 8px 24px 16px; padding-left: 18px; display: grid; gap: 6px; }
   .about { max-width: none; } .about p { max-width: 75ch; }
+
+  /* github */
+  .gh-head { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .repos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .repos a { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: start; padding: 14px 16px; border-radius: var(--r-m); background: var(--surface); color: var(--on-surface); text-decoration: none; box-shadow: inset 0 0 0 1px var(--outline-variant); transition: box-shadow .15s; }
+  .repos a:hover { box-shadow: inset 0 0 0 1px var(--outline); }
+  .repos .icon { color: var(--primary); margin-top: 2px; }
+  .repo { display: block; font-weight: 500; }
+  .repos .s { display: block; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
+  .lang { font-size: 13px; color: var(--on-surface-variant); white-space: nowrap; }
 
   /* sampler */
   .sampler { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: center; }
@@ -168,7 +175,7 @@
     .hero, .two, .sampler, .media-card, .contact { grid-template-columns: 1fr; }
     .hero .media { min-height: 260px; order: -1; }
     .hero .txt { padding: 24px; }
-    .cv { grid-template-columns: 1fr; }
+    .repos { grid-template-columns: 1fr; }
     .pubs { padding: 8px 20px 16px; }
     .pub-list li { grid-template-columns: 1fr; gap: 2px; }
     .roma { grid-template-columns: 1fr 1fr; }
@@ -187,7 +194,7 @@
       <a class="btn text" href="#about">About</a>
       <a class="btn text" href="#papers">Publications</a>
       <a class="btn text" href="#cv">CV</a>
-      <a class="btn text" href="#ferrari">Ferrari</a>
+      <a class="btn text" href="#github">GitHub</a>
       <a class="btn text" href="#romagna">Romagna</a>
       <a class="btn filled" href="#contact"><span class="icon" aria-hidden="true">mail</span>Contact</a>
     </nav>
@@ -317,33 +324,38 @@
 
   <section id="cv" aria-labelledby="cv-h">
     <div class="sec-h"><h2 id="cv-h" class="headline-m">Academic &amp; industry</h2></div>
-    <div class="cv">
-      <div class="card flush">
-        <h3 class="title-m">Positions</h3>
-        <ul class="list">
-          <li><span class="icon" aria-hidden="true">school</span><div><div class="t">PhD candidate, Computer Science and Engineering</div><div class="s">University of Bologna, Department of Computer Science and Engineering (XL cycle)</div></div><span class="end">2024–</span></li>
-          <li><span class="icon" aria-hidden="true">location_city</span><div><div class="t">Visiting researcher</div><div class="s">Cornell Tech, Jacobs Technion–Cornell Institute, New York. Host: Prof. Andrea Lodi</div></div><span class="end">2025–26</span></li>
-          <li><span class="icon" aria-hidden="true">directions_car</span><div><div class="t">Ferrari PhD fellow</div><div class="s">Ferrari S.p.A., Maranello. Generative AI for automotive design: image generation and editing, 3D reconstruction</div></div><span class="end">2024–</span></li>
-          <li><span class="icon" aria-hidden="true">co_present</span><div><div class="t">Teaching tutor, Artificial Intelligence</div><div class="s">University of Bologna</div></div><span class="end">2025</span></li>
-        </ul>
-      </div>
-      <div class="card flush">
-        <h3 class="title-m">Education</h3>
-        <ul class="list">
-          <li><span class="icon" aria-hidden="true">workspace_premium</span><div><div class="t">PhD, Computer Science and Engineering</div><div class="s">University of Bologna, in progress</div></div><span class="end">2024–</span></li>
-          <li><span class="icon" aria-hidden="true">psychology</span><div><div class="t">MSc, Artificial Intelligence</div></div><span class="end"></span></li>
-          <li><span class="icon" aria-hidden="true">science</span><div><div class="t">BSc, Physics</div></div><span class="end"></span></li>
-        </ul>
-        <h3 class="title-m">Research areas</h3>
-        <ul class="areas body-m">
-          <li>Diffusion models for imaging inverse problems</li>
-          <li>Certified first-order methods and branch-and-bound</li>
-          <li>GPU-parallel mathematical optimization</li>
-          <li>Generative AI and 3D for automotive design</li>
-          <li>Evaluation and fairness of language models</li>
-        </ul>
-      </div>
+    <div class="card pubs">
+      <h3 class="title-m pub-grp">Positions</h3>
+      <ol class="pub-list">
+        <li><span class="pub-year">2025–26</span><div><p class="pub-title">Visiting Researcher</p><p class="body-m">Cornell Tech, Jacobs Technion–Cornell Institute, New York</p><p class="body-m muted">Hosted by Prof. Andrea Lodi. First-order methods, bound certification, GPU computing.</p></div></li>
+        <li><span class="pub-year">2024–</span><div><p class="pub-title">PhD Candidate, Computer Science and Engineering</p><p class="body-m">University of Bologna, Department of Computer Science and Engineering</p><p class="body-m muted">XL cycle. Generative models and certified optimization.</p></div></li>
+        <li><span class="pub-year">2024–</span><div><p class="pub-title">Ferrari PhD Fellow</p><p class="body-m">Ferrari S.p.A., Maranello</p><p class="body-m muted">Generative AI for automotive design: image generation and editing, 3D reconstruction.</p></div></li>
+        <li><span class="pub-year">2025</span><div><p class="pub-title">Teaching Tutor, Artificial Intelligence</p><p class="body-m">University of Bologna</p></div></li>
+      </ol>
+      <h3 class="title-m pub-grp">Education</h3>
+      <ol class="pub-list">
+        <li><span class="pub-year">2024–</span><div><p class="pub-title">PhD, Computer Science and Engineering</p><p class="body-m">University of Bologna</p></div></li>
+        <li><span class="pub-year"></span><div><p class="pub-title">MSc, Artificial Intelligence</p><p class="body-m"></p></div></li>
+        <li><span class="pub-year"></span><div><p class="pub-title">BSc, Physics</p><p class="body-m"></p></div></li>
+      </ol>
+      <h3 class="title-m pub-grp">Research areas</h3>
+      <div class="chips" style="margin-top:12px"><span class="chip">Diffusion models for imaging inverse problems</span><span class="chip">Certified first-order methods</span><span class="chip">Branch-and-bound on GPU</span><span class="chip">Generative AI for automotive design</span><span class="chip">LLM evaluation and fairness</span></div>
     </div>
+  </section>
+
+  <section id="github" class="card gh" aria-labelledby="gh-h">
+    <div class="gh-head">
+      <div><h2 id="gh-h" class="headline-m">GitHub</h2><p class="muted">Code from papers, courses and side projects.</p></div>
+      <a class="btn filled" href="https://github.com/francesco-source"><span class="icon" aria-hidden="true">code</span>github.com/francesco-source</a>
+    </div>
+    <ul class="repos">
+        <li><a href="https://github.com/francesco-source/BlenderRAG"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">BlenderRAG</span><span class="s">3D object generation via retrieval-augmented code synthesis (paper code).</span></span><span class="lang">Python</span></a></li>
+        <li><a href="https://github.com/francesco-source/interpolator"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">interpolator</span><span class="s">Flow matching interpolator.</span></span><span class="lang">Python</span></a></li>
+        <li><a href="https://github.com/francesco-source/Diffusion_models_over_ising"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">Diffusion models over ising</span><span class="s">Diffusion models on Ising-model configurations.</span></span><span class="lang">Jupyter Notebook</span></a></li>
+        <li><a href="https://github.com/francesco-source/Portfolio-Optimization-via-Machine-Learning-Models"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">Portfolio Optimization via Machine Learning Models</span><span class="s">Selecting a stock portfolio and improving yearly returns with ML models.</span></span><span class="lang">Jupyter Notebook</span></a></li>
+        <li><a href="https://github.com/francesco-source/2D_3D_femur_segmentation"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">2D 3D femur segmentation</span><span class="s">2D and 3D femur segmentation.</span></span><span class="lang">Jupyter Notebook</span></a></li>
+        <li><a href="https://github.com/francesco-source/DeepLearning"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">DeepLearning</span><span class="s">Notebooks from the Deep Learning course.</span></span><span class="lang">Jupyter Notebook</span></a></li>
+    </ul>
   </section>
 
   <section class="card sampler" aria-labelledby="sampler-h">
@@ -360,20 +372,8 @@
     <canvas id="noise-canvas" width="640" height="400" role="img" aria-label="Meme hidden in Gaussian noise: a cotoletta alla bolognese under the captions Me: generate a mountain, and My model, trained in Bologna"></canvas>
   </section>
 
-  <section id="ferrari" aria-labelledby="ferrari-h">
-    <div class="sec-h"><span class="icon" aria-hidden="true">directions_car</span><h2 id="ferrari-h" class="headline-m">Ferrari</h2></div>
-    <div class="card media-card">
-      <img src="assets/ferrari-museum.jpg" width="1600" height="1205" alt="A row of Scuderia Ferrari Formula 1 cars from different eras on display" loading="lazy">
-      <div class="txt">
-        <h3 class="title-l">A tifoso who gets to work with them</h3>
-        <p>I've been watching Ferrari race since I was a kid. Imola is half an hour from home and Maranello is just up the Via Emilia, so it was never really a choice.</p>
-        <p>Now my PhD is funded by Ferrari, and I spend part of my time building AI tools that help their designers sketch, edit and see new ideas faster. On Sundays I'm still just a fan shouting at the TV.</p>
-      </div>
-    </div>
-  </section>
-
   <section id="romagna" aria-labelledby="romagna-h">
-    <div class="sec-h"><span class="icon" aria-hidden="true">landscape</span><h2 id="romagna-h" class="headline-m">Romagna mia</h2></div>
+    <div class="sec-h"><span class="icon" aria-hidden="true">landscape</span><h2 id="romagna-h" class="headline-m">Romagnoli, popolo eletto</h2></div>
     <div class="roma">
       <div class="card gallo-card">
         <svg class="gallo" id="gallo" style="cursor:pointer" viewBox="0 0 200 190" role="img" aria-labelledby="gallo-t">

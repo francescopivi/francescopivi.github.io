@@ -31,7 +31,7 @@
   .icon { font-family: "Material Symbols Outlined"; font-size: 20px; line-height: 1; font-weight: normal; font-style: normal; letter-spacing: 0; -webkit-font-smoothing: antialiased; }
 
   /* type roles */
-  .display-s { font: 400 clamp(34px, 4.2vw, 48px)/1.1 "Source Serif 4", Georgia, serif; letter-spacing: -.5px; }
+  .display-s { font: 400 clamp(38px, 5vw, 60px)/1.05 "Source Serif 4", Georgia, serif; letter-spacing: -.5px; }
   .headline-m { font: 400 30px/38px "Source Serif 4", Georgia, serif; letter-spacing: -.3px; }
   .title-l { font: 400 24px/30px "Source Serif 4", Georgia, serif; letter-spacing: 0; }
   .title-m { font: 500 16px/24px "DM Sans", sans-serif; letter-spacing: .15px; }
@@ -85,7 +85,7 @@
   .hero .media { position: relative; min-height: 420px; }
   .hero .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .cap { position: absolute; left: 12px; bottom: 12px; background: rgba(35,25,24,.72); color: #fff; padding: 4px 12px; border-radius: 8px; font-size: 13px; line-height: 18px; letter-spacing: .2px; }
-  .thermo { position: absolute; top: 12px; right: 12px; display: inline-flex; align-items: center; gap: 6px; background: rgba(250,249,245,.92); color: var(--on-surface); padding: 6px 12px 6px 8px; border-radius: 8px; font: 500 14px/20px "DM Sans", sans-serif; }
+  .thermo { position: absolute; top: 12px; right: 12px; display: inline-flex; align-items: center; gap: 6px; background: rgba(250,249,245,.92); color: #141413; padding: 6px 12px 6px 8px; border-radius: 8px; font: 500 14px/20px "DM Sans", sans-serif; }
   .thermo .icon { color: var(--primary); }
   .thermo[hidden] { display: none; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -127,6 +127,32 @@
   .repo { display: block; font-weight: 500; }
   .repos .s { display: block; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
   .lang { font-size: 13px; color: var(--on-surface-variant); white-space: nowrap; }
+
+  .news { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--primary-container); color: var(--on-primary-container); text-decoration: none; font-size: 14px; line-height: 20px; transition: gap .2s; }
+  .news:hover { gap: 12px; }
+  .news .icon { font-size: 18px; color: var(--primary); }
+  .badge { display: inline-block; padding: 0 8px; border-radius: 6px; background: var(--primary); color: var(--on-primary); font: 500 12px/20px "DM Sans", sans-serif; margin-right: 6px; font-style: normal; }
+  .pub-list li { transition: background .15s; border-radius: 8px; }
+  .pub-list li:hover { background: var(--surface-c); }
+
+  /* sections rise in as you scroll (only when JS runs and motion is welcome) */
+  @media (prefers-reduced-motion: no-preference) {
+    .js main > section { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
+    .js main > section.in { opacity: 1; transform: none; }
+  }
+
+  /* dark theme follows the system */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #e3906c; --on-primary: #1f1e1d;
+      --primary-container: #4a2b1d; --on-primary-container: #f9dccd;
+      --secondary-container: #3a3a37; --on-secondary-container: #ece9df;
+      --surface: #1f1e1d; --on-surface: #f5f4ed; --on-surface-variant: #b8b5a9;
+      --surface-c-low: #262624; --surface-c: #30302e; --surface-c-high: #3a3a37;
+      --outline: #77746b; --outline-variant: #3d3c38;
+    }
+    .snack { background: #f0eee6; color: #141413; }
+  }
 
   /* sampler */
   .sampler { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: center; }
@@ -211,6 +237,7 @@
         </div>
       </div>
       <p>PhD researcher in generative models and optimization at the University of Bologna, Ferrari PhD fellow, and visiting researcher at Cornell Tech, New York. From Forlì, Romagna.</p>
+      <a class="news" href="#papers"><span class="icon" aria-hidden="true">campaign</span><span><b>News</b> · LAMP accepted at NeurIPS 2026</span><span class="icon" aria-hidden="true">arrow_forward</span></a>
       <div class="chips">
         <button class="chip egg" type="button" data-egg="I turn pure noise into pictures. Mostly cotolette."><span class="icon" aria-hidden="true">blur_on</span>Diffusion models</button>
         <button class="chip egg" type="button" data-egg="Proven optimal, with a certificate. My parking is not."><span class="icon" aria-hidden="true">functions</span>Certified optimization</button>
@@ -248,7 +275,7 @@
         <li><span class="pub-year">2026</span><div>
           <p class="pub-title">Improving Diffusion Posterior Samplers with Lagged Temporal Corrections for Image Restoration</p>
           <p class="body-m">D. Evangelista, E. Morotti, <b>F. Pivi</b>, M. Gabbrielli</p>
-          <p class="body-m muted"><i>Conference on Neural Information Processing Systems (NeurIPS)</i>, 2026</p>
+          <p class="body-m muted"><span class="badge">NeurIPS 2026</span> <i>Conference on Neural Information Processing Systems</i></p>
           <div class="actions pub-links"><a class="btn text" href="https://arxiv.org/abs/2605.12573">arXiv</a><a class="btn text" href="https://arxiv.org/pdf/2605.12573">PDF</a><button class="btn text bib" type="button" data-bib="@inproceedings{evangelista2026lamp,
   title={Improving Diffusion Posterior Samplers with Lagged Temporal Corrections for Image Restoration},
   author={Evangelista, Davide and Morotti, Elena and Pivi, Francesco and Gabbrielli, Maurizio},
@@ -527,6 +554,11 @@ fetch('https://api.open-meteo.com/v1/forecast?latitude=44.2227&longitude=12.0407
       document.getElementById('forli-cap').textContent = `Piazza Saffi, Forlì. It's ${t}°C there, so here it is in winter`;
     }
   }).catch(() => {});
+
+// Sections rise in once as they enter the screen
+document.documentElement.classList.add('js');
+const rise = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); rise.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+document.querySelectorAll('main > section').forEach(el => rise.observe(el));
 </script>
 </body>
 </html>

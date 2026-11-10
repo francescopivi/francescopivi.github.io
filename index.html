@@ -177,7 +177,7 @@
   .verse { font-style: italic; }
 
   /* places carousel */
-  .carousel { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+  .carousel { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, 30%); gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
   .carousel figure { position: relative; margin: 0; scroll-snap-align: start; border-radius: var(--r-xl); overflow: hidden; height: 280px; }
   .carousel img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
   .carousel figure:hover img { transform: scale(1.04); }
@@ -559,6 +559,21 @@ fetch('https://api.open-meteo.com/v1/forecast?latitude=44.2227&longitude=12.0407
 document.documentElement.classList.add('js');
 const rise = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); rise.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
 document.querySelectorAll('main > section').forEach(el => rise.observe(el));
+
+// Places carousel turns by itself; pauses on hover, focus or touch
+(() => {
+  const c = document.querySelector('.carousel');
+  if (!c || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let paused = false;
+  ['mouseenter', 'focusin', 'touchstart'].forEach(e => c.addEventListener(e, () => paused = true, { passive: true }));
+  ['mouseleave', 'focusout', 'touchend'].forEach(e => c.addEventListener(e, () => paused = false, { passive: true }));
+  setInterval(() => {
+    if (paused || document.hidden) return;
+    const step = c.querySelector('figure').offsetWidth + 8;
+    const atEnd = c.scrollLeft + c.clientWidth >= c.scrollWidth - 4;
+    c.scrollTo({ left: atEnd ? 0 : c.scrollLeft + step, behavior: 'smooth' });
+  }, 3000);
+})();
 </script>
 </body>
 </html>

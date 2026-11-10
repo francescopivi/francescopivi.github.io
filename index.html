@@ -258,7 +258,7 @@
   <section class="card sampler" aria-labelledby="sampler-h">
     <div>
       <h2 id="sampler-h" class="headline-m">Try a diffusion sampler</h2>
-      <p class="muted" style="margin-top:8px">A diffusion model learns to walk back from pure noise to a picture. Lower the noise, or press Run, and watch the Tre Cime di Lavaredo come out of the static.</p>
+      <p class="muted" style="margin-top:8px">A diffusion model learns to walk back from pure noise to a picture. I asked mine for a mountain. Press Run, or drag the noise down, and see what a model trained in Bologna thinks a mountain is.</p>
       <div class="ctl">
         <label for="t" class="title-m">Noise</label>
         <input id="t" type="range" min="0" max="1000" value="900" step="1">
@@ -266,7 +266,7 @@
       </div>
       <div class="actions" style="margin-top:16px"><button id="run" class="btn filled" type="button"><span class="icon" aria-hidden="true">play_arrow</span>Run</button></div>
     </div>
-    <canvas id="cv" width="640" height="400" role="img" aria-label="The Tre Cime di Lavaredo above Lago di Misurina, mixed with Gaussian noise at the chosen level"></canvas>
+    <canvas id="cv" width="640" height="400" role="img" aria-label="Meme hidden in Gaussian noise: a cotoletta alla bolognese under the captions Me: generate a mountain, and My model, trained in Bologna"></canvas>
   </section>
 
   <section id="ferrari" aria-labelledby="ferrari-h">
@@ -360,7 +360,7 @@ addEventListener('scroll', () => bar.classList.toggle('scrolled', scrollY > 4), 
 (() => {
   const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
   const range = document.getElementById('t'), out = document.getElementById('tv'), run = document.getElementById('run');
-  const img = new Image(); img.src = 'assets/lago-di-misurina-tre-cime-di-lavaredo.jpg';
+  const img = new Image(); img.src = 'assets/cotoletta-pellegrino.jpg';
   let x0 = null, eps = null;
   const frame = ctx.createImageData(W, H);
   const gauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
@@ -379,6 +379,10 @@ addEventListener('scroll', () => bar.classList.toggle('scrolled', scrollY > 4), 
   img.onload = () => {
     const s = Math.max(W / img.width, H / img.height), w = img.width * s, h = img.height * s;
     ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+    // meme captions, baked into x0 so they come out of the noise too
+    ctx.font = '900 44px Impact, "Arial Black", sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 6; ctx.strokeStyle = '#000'; ctx.fillStyle = '#fff'; ctx.lineJoin = 'round';
+    [['ME: "GENERATE A MOUNTAIN"', 58], ['MY MODEL, TRAINED IN BOLOGNA', H - 24]].forEach(([txt, y]) => { ctx.strokeText(txt, W / 2, y, W - 32); ctx.fillText(txt, W / 2, y, W - 32); });
     try {
       const px = ctx.getImageData(0, 0, W, H).data;
       x0 = new Float32Array(W * H * 3); eps = new Float32Array(W * H * 3);

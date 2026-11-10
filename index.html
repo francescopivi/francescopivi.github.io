@@ -118,16 +118,6 @@
   .pub-links .btn { height: 32px; }
   .about { max-width: none; } .about p { max-width: 75ch; }
 
-  /* github */
-  .gh-head { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .repos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .repos a { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: start; padding: 14px 16px; border-radius: var(--r-m); background: var(--surface); color: var(--on-surface); text-decoration: none; box-shadow: inset 0 0 0 1px var(--outline-variant); transition: box-shadow .15s; }
-  .repos a:hover { box-shadow: inset 0 0 0 1px var(--outline); }
-  .repos .icon { color: var(--primary); margin-top: 2px; }
-  .repo { display: block; font-weight: 500; }
-  .repos .s { display: block; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
-  .lang { font-size: 13px; color: var(--on-surface-variant); white-space: nowrap; }
-
   .news { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--primary-container); color: var(--on-primary-container); text-decoration: none; font-size: 14px; line-height: 20px; transition: gap .2s; }
   .news:hover { gap: 12px; }
   .news .icon { font-size: 18px; color: var(--primary); }
@@ -170,7 +160,8 @@
   .roma { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .roma .card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
   .roma .card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
-  .roma .card .in { padding: 16px; display: grid; gap: 4px; }
+  .roma .card .in { padding: 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .roma .card .in .btn { margin-top: auto; }
   .roma .gallo-card { background: var(--primary-container); color: var(--on-primary-container); padding: 24px; justify-content: space-between; gap: 16px; }
   .gallo { width: 96px; height: auto; color: var(--primary); }
   .detto { font: 500 24px/32px "Source Serif 4", Georgia, serif; }
@@ -201,7 +192,6 @@
     .hero, .two, .sampler, .media-card, .contact { grid-template-columns: 1fr; }
     .hero .media { min-height: 260px; order: -1; }
     .hero .txt { padding: 24px; }
-    .repos { grid-template-columns: 1fr; }
     .pubs { padding: 8px 20px 16px; }
     .pub-list li { grid-template-columns: 1fr; gap: 2px; }
     .roma { grid-template-columns: 1fr 1fr; }
@@ -219,7 +209,6 @@
     <nav aria-label="Main">
       <a class="btn text" href="#about">About</a>
       <a class="btn text" href="#papers">Publications</a>
-      <a class="btn text" href="#github">GitHub</a>
       <a class="btn text" href="#romagna">Romagna</a>
       <a class="btn filled" href="#contact"><span class="icon" aria-hidden="true">mail</span>Contact</a>
     </nav>
@@ -348,21 +337,6 @@
     </div>
   </section>
 
-  <section id="github" class="card gh" aria-labelledby="gh-h">
-    <div class="gh-head">
-      <div><h2 id="gh-h" class="headline-m">GitHub</h2><p class="muted">Code from papers, courses and side projects.</p></div>
-      <a class="btn filled" href="https://github.com/francesco-source"><span class="icon" aria-hidden="true">code</span>github.com/francesco-source</a>
-    </div>
-    <ul class="repos">
-        <li><a href="https://github.com/francesco-source/BlenderRAG"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">BlenderRAG</span><span class="s">3D object generation via retrieval-augmented code synthesis (paper code).</span></span><span class="lang">Python</span></a></li>
-        <li><a href="https://github.com/francesco-source/interpolator"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">interpolator</span><span class="s">Flow matching interpolator.</span></span><span class="lang">Python</span></a></li>
-        <li><a href="https://github.com/francesco-source/Diffusion_models_over_ising"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">Diffusion models over ising</span><span class="s">Diffusion models on Ising-model configurations.</span></span><span class="lang">Jupyter Notebook</span></a></li>
-        <li><a href="https://github.com/francesco-source/Portfolio-Optimization-via-Machine-Learning-Models"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">Portfolio Optimization via Machine Learning Models</span><span class="s">Selecting a stock portfolio and improving yearly returns with ML models.</span></span><span class="lang">Jupyter Notebook</span></a></li>
-        <li><a href="https://github.com/francesco-source/2D_3D_femur_segmentation"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">2D 3D femur segmentation</span><span class="s">2D and 3D femur segmentation.</span></span><span class="lang">Jupyter Notebook</span></a></li>
-        <li><a href="https://github.com/francesco-source/DeepLearning"><span class="icon" aria-hidden="true">folder_code</span><span><span class="repo">DeepLearning</span><span class="s">Notebooks from the Deep Learning course.</span></span><span class="lang">Jupyter Notebook</span></a></li>
-    </ul>
-  </section>
-
   <section class="card sampler" aria-labelledby="sampler-h">
     <div>
       <h2 id="sampler-h" class="headline-m">Try a diffusion sampler</h2>
@@ -405,15 +379,15 @@
       </div>
       <article class="card">
         <img src="assets/tagliolini-tre-pini.jpg" width="360" height="480" alt="Tagliolini with clams, prawns and cherry tomatoes in a white shell-shaped dish" loading="lazy">
-        <div class="in"><span class="body-m muted">Favourite summer dish</span><h3 class="title-m">Tagliolini golosi</h3><p class="body-m muted">Ristorante Tre Pini, Lido di Classe</p><a class="btn text" style="margin-left:-12px;justify-self:start" href="https://www.google.com/maps/search/?api=1&amp;query=Ristorante+Tre+Pini+Lido+di+Classe"><span class="icon" aria-hidden="true">location_on</span>Open in Maps</a></div>
+        <div class="in"><span class="body-m muted">Favourite summer dish</span><h3 class="title-m">Tagliolini golosi</h3><p class="body-m muted">Ristorante Tre Pini, Lido di Classe</p><a class="btn text" style="margin-left:-12px;align-self:flex-start" href="https://www.google.com/maps/search/?api=1&amp;query=Ristorante+Tre+Pini+Lido+di+Classe"><span class="icon" aria-hidden="true">location_on</span>Open in Maps</a></div>
       </article>
       <article class="card">
         <img src="assets/cotoletta-pellegrino.jpg" width="360" height="480" alt="Cotoletta alla bolognese covered in melted cheese sauce" loading="lazy">
-        <div class="in"><span class="body-m muted">Favourite winter dish</span><h3 class="title-m">Cotoletta alla bolognese</h3><p class="body-m muted">Il Pellegrino, Bologna</p><a class="btn text" style="margin-left:-12px;justify-self:start" href="https://www.google.com/maps/search/?api=1&amp;query=Ristorante+Il+Pellegrino+Bologna"><span class="icon" aria-hidden="true">location_on</span>Open in Maps</a></div>
+        <div class="in"><span class="body-m muted">Favourite winter dish</span><h3 class="title-m">Cotoletta alla bolognese</h3><p class="body-m muted">Il Pellegrino, Bologna</p><a class="btn text" style="margin-left:-12px;align-self:flex-start" href="https://www.google.com/maps/search/?api=1&amp;query=Ristorante+Il+Pellegrino+Bologna"><span class="icon" aria-hidden="true">location_on</span>Open in Maps</a></div>
       </article>
       <article class="card">
         <img src="assets/cervia.jpg" width="360" height="480" alt="Two shadows on the sand of Cervia beach under a long striped kite" loading="lazy">
-        <div class="in"><span class="body-m muted">Favourite place</span><h3 class="title-m">Cervia</h3><p class="body-m muted">The beach in the off season</p><a class="btn text" style="margin-left:-12px;justify-self:start" href="https://www.google.com/maps/search/?api=1&amp;query=Spiaggia+di+Cervia"><span class="icon" aria-hidden="true">location_on</span>Open in Maps</a></div>
+        <div class="in"><span class="body-m muted">Favourite place</span><h3 class="title-m">Cervia</h3><p class="body-m muted">The beach in the off season</p><a class="btn text" style="margin-left:-12px;align-self:flex-start" href="https://www.google.com/maps/search/?api=1&amp;query=Spiaggia+di+Cervia"><span class="icon" aria-hidden="true">location_on</span>Open in Maps</a></div>
       </article>
     </div>
   </section>

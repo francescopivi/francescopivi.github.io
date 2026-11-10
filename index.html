@@ -524,18 +524,20 @@ document.querySelectorAll('.bib').forEach(b => b.addEventListener('click', async
 }));
 
 // Live temperature in Forlì (Open-Meteo, no key); below 8°C the hero shows Forlì in the snow
-fetch('https://api.open-meteo.com/v1/forecast?latitude=44.2227&longitude=12.0407&current=temperature_2m')
+const forliTemp = () => fetch('https://api.open-meteo.com/v1/forecast?latitude=44.2227&longitude=12.0407&current=temperature_2m&timezone=Europe%2FRome', { cache: 'no-store' })
   .then(r => r.json()).then(d => {
-    const t = Math.round(d.current.temperature_2m);
-    document.getElementById('thermo-t').textContent = `Forlì now: ${t}°C`;
+    const t = d.current.temperature_2m, at = d.current.time.slice(11, 16);
+    document.getElementById('thermo-t').textContent = `Forlì now: ${t.toFixed(1)}°C · ${at}`;
     document.getElementById('thermo').hidden = false;
-    if (t < 8) {
-      const img = document.getElementById('forli');
-      img.src = 'assets/forli-saffi-neve.jpg'; img.alt = 'Piazza Saffi in Forlì under snow, with a Christmas tree and the monument to Aurelio Saffi';
-      img.style.objectPosition = '50% 60%';
-      document.getElementById('forli-cap').textContent = `Piazza Saffi, Forlì. It's ${t}°C there, so here it is in winter`;
+    const img = document.getElementById('forli'), cold = t < 8, winter = img.src.includes('neve');
+    if (cold !== winter) {
+      img.src = cold ? 'assets/forli-saffi-neve.jpg' : 'assets/forli-piazza-aurelio-saffi-palazzo-municipale-01.jpg';
+      img.alt = cold ? 'Piazza Saffi in Forlì under snow, with a Christmas tree and the monument to Aurelio Saffi' : 'Piazza Saffi in Forlì: the brick town hall with its clock tower and red lamp posts';
+      img.style.objectPosition = cold ? '50% 60%' : '40% 50%';
     }
+    document.getElementById('forli-cap').textContent = cold ? `Piazza Saffi, Forlì. It's ${Math.round(t)}°C there, so here it is in winter` : 'Piazza Saffi, Forlì';
   }).catch(() => {});
+forliTemp(); setInterval(forliTemp, 10 * 60 * 1000);
 
 // Sections rise in once as they enter the screen
 document.documentElement.classList.add('js');
